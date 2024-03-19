@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" href="highlight/styles/monokai-sublime.css">
+</head>
+<body>
+    <pre>
+        <code class="javascript">
+/**
+ * 播放视频
+ * @param code_         需要播放的视频code，对应mediacode字段
+ * @param type_         需要播放的视频类型1:VOD 2:TV 4:TVOD 5:片花6:书签8:直播频道
+ * @param start_time_   视频的播放起始时间点
+ */
+function visPlay(code_, type_, start_time_, super_code_) {
+    var _play_data = {cid : code_, playtype : type_};
+    if (start_time_) {
+        _play_data.start_time = start_time_;
+    }
+    if (super_code_) {
+        _play_data.supercid  = super_code_;
+    }
+    if (is_android) {
+        window.webview.setVideoUrl(JSON.stringify(_play_data));
+    }
+    else {
+        window.location.href='sdunicom:setVideoUrl' + JSON.stringify(_play_data);
+    }
+}
+        </code>
+    </pre>
+    <script src="highlight/highlight.pack.js"></script>
+    <script>
+        hljs.initHighlightingOnLoad();
+    </script>
+</body>
+</html>

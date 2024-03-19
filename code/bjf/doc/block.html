@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>机顶盒前端页面开发指引</title>
+<link rel="stylesheet" href="../xdoc/demo.css">
+<link rel="stylesheet" href="../xdoc/highlight/styles/monokai-sublime.css">
+<style type="text/css">
+textarea {
+	background: #23241f;
+	color: #a6e22e;
+	border: #23241f;
+	padding: 10px;
+}
+</style>
+</head>
+<body>
+<div class="h1">块元素</div>
+<div class="desc">
+ block（块）元素的特点：<br />
+ <br>
+    ①总是在新行上开始，会换行；<br>
+    ②高度，行高以及外边距和内边距都可控制；<br>
+    ③宽度缺省是它的容器的100%，除非设定一个宽度。<br>
+    ④它可以容纳内联元素和其他块元素<br>
+    <br>
+</div>
+
+<textarea style="width:800px; height:150px;">
+<style type="text/css">
+#block1{width:300px; height:100px; background:#999999;}
+#block2{width:100px; height:50px; background:#993366;}
+#block3{width:100px; height:50px; background:#6666FF;}
+</style>
+<div id="block1">1</div>
+<div id="block2">2</div>
+<div id="block3">3</div>
+</textarea>
+
+<style type="text/css">
+#block1{width:300px; height:100px; background:#999999;}
+#block2{width:100px; height:50px; background:#993366;}
+#block3{width:100px; height:50px; background:#6666FF;}
+</style>
+<div id="block1">1</div>
+<div id="block2">2</div>
+<div id="block3">3</div>
+
+</body>
+</html>

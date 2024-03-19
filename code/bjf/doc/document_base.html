@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>机顶盒前端页面开发指引</title>
+<link rel="stylesheet" href="../xdoc/demo.css">
+<link rel="stylesheet" href="../xdoc/highlight/styles/monokai-sublime.css">
+<style type="text/css">
+textarea {
+	background: #23241f;
+	color: #a6e22e;
+	border: #23241f;
+	padding: 10px;
+}
+</style>
+</head>
+<body>
+<div class="h1">机顶盒前端页面开发指引</div>
+<div class="desc">
+该文档主要说明构建机顶盒页面的基础知识，帮助业务开发团队成员更为快捷的了解熟悉机顶盒前端开发，构建符合规范的机顶盒页面。 <br />
+该文档支持IPTV/VIS页面。 <br />
+示例页面如下： <br />
+<textarea style="width:800px; height:700px;">
+<!DOCTYPE HTML>
+<html>
+<head>
+<!-- 这里是文档的头部 -->
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Page-Enter" content="blendTrans(Duration=1.0)" />
+<meta name="page-view-size" content="1280*720" />
+<title>title</title>
+<style type="text/css">
+/* 内联样式表 */
+</style>
+</head>
+<body>
+
+<!-- 引入bjf前端框架 加载在body后 --> 
+<script src="../base/bjf.1.0.5.min.js"></script> 
+
+<!--  HTML DOM 文档主体  -->
+
+</body>
+<script type="text/javascript">
+
+//js代码
+
+</script>
+</html>
+</textarea>
+</div>
+<div class="title">方法和对象列表：</div>
+<div>
+  <ul>
+    <li><a href="#DOCTYPE">HTML < !DOCTYPE> 标签</a></li>
+    <li><a href="#html">< html> 标签</a></li>
+    <li><a href="#head">< head> 标签</a></li>
+    <li><a href="#meta">< meta> 标签</a></li>
+    <li><a href="#title">< title> 标签</a></li>
+    <li><a href="#style">< style> 标签</a></li>
+    <li><a href="#script">< script> 标签</a></li>
+    <li><a href="#title">< body> 标签</a></li>
+    <li><a href="#box">css盒子模型解析</a></li>
+    <li><a href="#dom">html网页的标准文档流默认布局</a></li>
+    <li><a href="#case">构建网页实例</a></li>
+    <li><a href="#notice">注意事项</a></li>
+    <li><a href="#refer">参考文档</a></li>
+  </ul>
+</div>
+<div class="title">要点说明：</div>
+<div class="doc">
+<div class="name"><a id="DOCTYPE"></a>HTML< !DOCTYPE>标签</div>
+<div class="content">
+这是web浏览器关于页面使用哪个 HTML 或者 XHTML 版本进行编写的声明，不是 HTML 标签，必须放在 HTML 文档的第一行，位于
+<html>
+标签之前。<br />
+可声明三种DTD类型，比如：<br>
+<textarea style="width:800px; height:50px;">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+</textarea>
+<br>
+HTML5 不基于 SGML，所以不需要引用 DTD。
+</div>
+<div class="demo">
+<textarea style="width:800px; height:200px;">
+<!DOCTYPE html>
+<html>
+<head>
+<title>文档的标题</title>
+</head>
+
+<body>
+文档的内容......
+</body>
+</html>
+</textarea>
+</div>
+</div>
+<div class="doc">
+<div class="name"><a id="html">< html> 标签</a></div>
+<div class="content">
+< html>告知浏览器其自身是一个 HTML 文档。<br>
+< html> 与 < /html> 标签限定了文档的开始点和结束点，在它们之间是文档的头部< body>和主体< head>。<br>
+xmlns 属性在 XHTML 中是必需的，但在 HTML 中不是。不过，即使 XHTML 文档中的
+<html>
+没有使用此属性，W3C 的验证器也不会报错。这是因为 "xmlns=http://www.w3.org/1999/xhtml" 是一个固定值，即使您没有包含它，此值也会被添加到
+<html>
+标签中。<br />
+</div>
+<div class="demo">
+<textarea style="width:800px; height:200px;">
+<!DOCTYPE html>
+<html>
+<head>
+<title>文档的标题</title>
+</head>
+
+<body>
+文档的内容......
+</body>
+</html>
+</textarea>
+</div>
+</div>
+<div class="doc">
+<div class="name"><a id="head">< head> 标签</a></div>
+<div class="content">
+< head> 标签用于定义文档的头部，它是所有头部元素的容器。
+<head>
+中的元素可以引用脚本、指示浏览器在哪里找到样式表、提供元信息等等。<br>
+文档的头部描述了文档的各种属性和信息，包括文档的标题、在 Web 中的位置以及和其他文档的关系等。<br>
+在 head 部分可包含的标签：< base>, < link>, < meta>, < script>, < style>, 以及 < title>。<br>
+<br>
+注意：< head> 标签必须放在文档的开始处，紧跟在< html>后面，并处于< body>标签或< frameset>标签之前。<br>
+注意：< title> 定义文档的标题，它是 head 部分中唯一必需的元素。<br>
+</div>
+<div class="demo"></div>
+</div>
+<div class="doc">
+  <div class="name"><a id="meta">< meta> 标签</a></div>
+  <div class="content">< meta> 元素可提供有关页面的元信息（meta-information），比如针对搜索引擎和更新频度的描述和关键词。<br>
+    < meta> 标签必须位于文档的头部，不包含任何内容。<br>
+    < meta> 标签的属性定义了与文档相关联的名称/值对。<br>
+    <br>
+    我们主要用了三个< meta>标签:</div>
+  <div class="demo">
+    <textarea style="width:800px; height:50px;">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</textarea>
+    <br>
+    http-equiv 属性: 服务器将把名称/值对添加到发送给浏览器的内容头部。<br>
+    如此发送到浏览器的头部就应该包含：<br>
+    <textarea style="width:800px; height:50px;">
+content-type: text/html
+charset:utf-8
+</textarea>
+    <br>
+    虽然有些服务器会发送许多这种名称/值对，但是所有服务器都至少要发送一个：content-type:text/html。这将告诉浏览器准备接受一个 HTML 文档。<br>
+    EPG开发中，华为代码是UTF-8，中兴代码是GBK的。<br>
+    <br>
+    <textarea style="width:800px; height:50px;">
+<meta http-equiv="page-Enter" content="blendTrans(Duration=1.0)" />
+</textarea>
+    <br>
+    属性"page-Enter"代表进入网页时的效果，blendTrans是动态滤镜的一种，产生渐隐效果，意思是告诉浏览器，这个页面要渐渐显现至不透明。
+    相对应的属性还有"page-Exit"，代表离开网页时的效果。<br>
+    不是所有的浏览器都支持这个效果。<br>
+    <br>
+    <textarea style="width:800px; height:50px;">
+<meta name="page-view-size" content="1280*720" />
+</textarea>
+    <br>
+    属性"page-view-size"标识当前页面需要以哪种分辨率显示。<br>
+    比如：<br>
+    高清：1280*720<br>
+    标清：640*530<br>
+    建议每张页面都写好"page-view-size"的< meta>标签，大部分机顶盒都可以根据当前页面的"page-view-size"正确显示分辨率。
+    特例：<br>
+    某驻地的一款机顶盒根据前一张页面的"page-view-size"来显示当前页面的分辨率，导致问题：高清向标清转换时，无法正确显示。<br>
+    解决方法：高清页面和标清页面之间增加一用于跳转的空白页面，该页面的"page-view-size"为标清尺寸。</div>
+</div>
+<div class="doc">
+  <div class="name"><a id="style">< style> 标签</a></div>
+  <div class="content">< style> 标签用于为 HTML 文档定义样式信息。<br>
+    type 属性是必需的，定义 style 元素的内容。唯一可能的值是 "text/css"。<br>
+    <br>
+    各种机顶盒的浏览器对元素的内外边距、边框的默认定义可能会有不一致的情况，所以我们在页面开始时可以统一做个reset，定义如下：<br>
+    <textarea style="width:800px; height:100px;">
+  body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,form,input,textarea,p,table,tbody,tfoot,thead,tr,th,td {
+margin:0px; padding:0px; border:none; }
+</textarea>
+    <br>
+    <br>
+    body的css定义：<br>
+    <textarea style="width:800px; height:300px;">
+body {
+	width: 1280px;
+	height: 720px;
+	background-color: transparent; //由于大部分机顶盒的视频是放置在最底层，所以背景一定要设为透明
+	background: url(images/epg4ChannelList/bg.jpg) no-repeat; //如果有背景图，则需要在图片上挖视频框
+	overflow: hidden;
+	font-family: "黑体"; //建议黑体
+	font-size: 20px;
+	color: #FFFFFF;
+	margin: 0px;
+	padding: 0px;
+	border: none;
+}
+</textarea>
+  </div>
+  <div class="demo"></div>
+</div>
+<div class="doc">
+  <div class="name"><a id="script">< script> 标签</a></div>
+  <div class="content">< script> 标签用于定义客户端脚本，比如 JavaScript。<br>
+    script 元素既可以包含脚本语句，也可以通过 src 属性指向外部脚本文件。<br>
+    注意：假如此元素内部的代码没有位于某个函数中，那么这些代码会在页面被加载时被立即执行。<br>
+    < frameset> 标签之后的脚本会被忽略。<br>
+    <br>
+    通常情况下，JavaScript 代码是和 HTML 代码一起使用的，可以将 JavaScript 代码放置在 HTML 文档的任何地方。但放置的地方，会对 JavaScript 代码的正常执行会有一定影响。<br>
+    情况1：<br>
+    将 JavaScript 代码放置于 HTML 文档的 < head>< /head> 标签之间。<br>
+    由于 HTML 文档是由浏览器从上到下依次载入的，将 JavaScript 代码放置于< head>< /head> 标签之间，可以确保在需要使用脚本之前，它已经被载入了。<br>
+    <br>
+    情况2：<br>
+    将 JavaScript 代码放置于 < body>< /body> 之间的。<br>
+    设想如下一种情况：我们有一段 JavaScript 代码需要操作 HTML 元素。但由于 HTML 文档是由浏览器从上到下依次载入的，为避免 JavaScript 代码操作 HTML 元素时，HTML 元素还未载入而报错（对象不存在），因此需要将这段代码写到 HTML 元素后面。<br>
+    <br>
+    情况3：<br>
+    如果JavaScript是通过事件来驱动操作页面元素的，只需要确保JavaScript已被载入，放在任何位置都可以。<br>
+    <br>
+    要点：确保JavaScript 代码要操作的页面元素，在JavaScript操作前已经载入。<br>
+    注意：我们不建议将 JavaScript 代码写到 < html>< /html> 之外。</div>
+  <div class="demo"></div>
+</div>
+<div class="doc">
+  <div class="name"><a id="body">< body> 标签</a></div>
+  <div class="content">body 元素定义文档的主体。<br>
+    body 元素包含文档的所有内容的元素，比如文本、超链接、图像、表格和列表等等。<br>
+  </div>
+  <div class="demo"></div>
+</div>
+<div class="doc">
+  <div class="name"><a id="box">css盒子模型解析</a></div>
+  <div class="content">CSS盒子模型：W3C组织建议把所有的网页上的对象都放在一个盒子中(在定义盒子宽高的时候，要考虑到内填充，边框，边界的存在）<br>
+    <br>
+    一个盒子的构成：<br>
+    <br>
+    盒子中的内容：content<br>
+    盒子的边框：border<br>
+    盒子边框与内容之间的距离：称为填充---padding内边距（内补丁）<br>
+    如果有多个盒子存在，盒子与盒子之间的距离：称为边界---margin，外边距（外补丁）<br>
+    <br>
+    整个盒子模型在网页中所占的宽度：左边界+左边框+左填充+内容+右填充+右边框+右边界<br>
+    <br>
+    CSS盒子模型的属性：<br>
+    <br>
+    内容属性：宽=width 高=height<br>
+    内填充属性（内容与边框之间的距离）：padding<br>
+    外边距属性：margin（使用该属性的时候注意浏览器的兼容性）<br>
+    <br>
+    内填充与边界的规则：<br>
+    如果有四个参数：表示上右下左,也可以单单指定某个方向<br>
+    如果只有一个参数：表示上右下左<br>
+    如果有两个参数： 第一个参数表示上下 第二个参数表示左右<br>
+    如果三个参数：表示上 左右 下<br>
+    <br>
+    <img src="images/base/box.jpg" /></div>
+  <div class="demo"></div>
+</div>
+<div class="doc">
+  <div class="name"><a id="dom">html网页的标准文档流默认布局</a></div>
+  <div class="content">块元素(block element)<br>
+    <br>
+    <textarea style="width:800px; height:550px;">
+
+
+◎ address - 地址
+
+◎ blockquote - 块引用
+
+◎ center - 举中对齐块
+
+◎ dir - 目录列表
+
+◎ div - 常用块级容易，也是css layout的主要标签
+
+◎ dl - 定义列表
+
+◎ fieldset - form控制组
+
+◎ form - 交互表单
+
+◎ h1 - 大标题
+
+◎ h2 - 副标题
+
+◎ h3 - 3级标题
+
+◎ h4 - 4级标题
+
+◎ h5 - 5级标题
+
+◎ h6 - 6级标题
+
+◎ hr - 水平分隔线
+
+◎ isindex - input prompt
+
+◎ menu - 菜单列表
+
+◎ noframes - frames可选内容，（对于不支持frame的浏览器显示此区块内容）
+
+◎ noscript - 可选脚本内容（对于不支持script的浏览器显示此内容）
+
+◎ ol - 排序表单
+
+◎ p - 段落
+
+◎ pre - 格式化文本
+
+◎ table - 表格
+
+◎ ul - 非排序列表（无序列表）
+</textarea>
+    <br>
+    <br>
+    <iframe src="block.html" width="900" height="700"></iframe>
+    <br>
+    <br>
+    <br>
+    内联元素(inline element)<br>
+    <br>
+    <textarea style="width:800px; height:550px;">
+
+
+
+◎ a - 锚点
+
+◎ abbr - 缩写
+
+◎ acronym - 首字
+
+◎ b - 粗体(不推荐)
+
+◎ bdo - bidi override
+
+◎ big - 大字体
+
+◎ br - 换行
+
+◎ cite - 引用
+
+◎ code - 计算机代码(在引用源码的时候需要)
+
+◎ dfn - 定义字段
+
+◎ em - 强调
+
+◎ font - 字体设定(不推荐)
+
+◎ i - 斜体
+
+◎ img - 图片
+
+◎ input - 输入框
+
+◎ kbd - 定义键盘文本
+
+◎ label - 表格标签
+
+◎ q - 短引用
+
+◎ s - 中划线(不推荐)
+
+◎ samp - 定义范例计算机代码
+
+◎ select - 项目选择
+
+◎ small - 小字体文本
+
+◎ span - 常用内联容器，定义文本内区块
+
+◎ strike - 中划线
+
+◎ strong - 粗体强调
+
+◎ sub - 下标
+
+◎ sup - 上标
+
+◎ textarea - 多行文本输入框
+
+◎ tt - 电传文本
+
+◎ u - 下划线
+
+◎ var - 定义变量
+</textarea>
+    <br>
+    <br>
+    <iframe src="inline.html" width="900" height="600"></iframe>
+    <br>
+    <iframe src="block+inline.html" width="900" height="1100"></iframe>
+    <br>
+    <textarea style="width:800px; height:350px;">
+可变元素：可变元素为根据上下文语境决定该元素为块元素或者内联元素。
+
+◎ applet - java applet
+
+◎ button - 按钮
+
+◎ del - 删除文本
+
+◎ iframe - inline frame
+
+◎ ins - 插入的文本
+
+◎ map - 图片区块(map)
+
+◎ object - object对象
+
+◎ script - 客户端脚本
+</textarea>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    块元素和内联元素的基本差异是块元素一般都从新行开始。<br>
+    而当加入了css控制以后，块元素和内联元素的这种属性差异就不成为差异了。比如，我们完全可以把内联元素加上display:block这样的属性，让他也有每次都从新行开始的属性即成为块元素,同样我们可以把块元素加上display:inline这样的属性，让他也在一行上排列。<br>
+    <br>
+    可变元素：<br>
+    <br>
+    是基于以上两者随环境而变化的，它的基本概念就是他需要根据上下文关系确定该元素是块元素或者内联元素。可变元素还是属于上述两种元素类别，一旦上下文关系确定了他的类别，他就要遵循块元素或者内联元素的规则限制<br>
+    <br>
+    文档流:<br>
+    <br>
+    将窗体自上而下分成一行行, 并在每行中按从左至右的顺序排放元素,即为文档流。<br>
+    每个非浮动块级元素都独占一行, 浮动元素则按规定浮在行的一端. 若当前行容不下, 则另起新行再浮动。<br>
+    内联元素也不会独占一行。几乎所有元素(包括块级,内联和列表元素)均可生成子行, 用于摆放子元素。<br>
+    <br>
+    有三种情况将使得元素脱离文档流而存在,分别是浮动,绝对定位, 固定定位。<br>
+    <br>
+    浮动元素不占任何正常文档流空间，而浮动元素的定位还是基于正常的文档流，然后从文档流中抽出并尽可能远的移动至左侧或者右侧。<br>
+    文字内容会围绕在浮动元素周围。当一个元素从正常文档流中抽出后，仍然在文档流中的其他元素将忽略该元素并填补他原先的空间基于文档流, 我们可以很容易理解以下的定位模式:<br>
+    <br>
+    <iframe src="float.html" width="900" height="2400"></iframe>
+    <br>
+    相对定位, 即相对于元素在文档流中位置进行偏移. 但保留原占位。<br>
+    <br>
+    <iframe src="relative.html" width="900" height="1000"></iframe>
+    <br>
+    绝对定位, 即完全脱离文档流, 相对于position属性非static值的最近父级元素进行偏移。<br>
+    <iframe src="absolute.html" width="900" height="500" scrolling="yes"></iframe>
+    <br>
+    固定定位, 即完全脱离文档流, 相对于视区进行偏移。<br>
+    <iframe src="fixed.html" width="900" height="500" scrolling="yes"></iframe>
+  </div>
+  <div class="demo"></div>
+</div>
+<div class="doc">
+<div class="name"><a id="case">构建网页实例</a></div>
+<div class="content">实例：<br>
+  <br>
+  <iframe src="case.html" width="1280" height="720"></iframe>
+  <br>
+  <br>
+  分析结构：
+  <iframe src="case2.html" width="1300" height="750"></iframe>
+</div>
+<div class="demo">
+页面代码：<br>
+<br>
+<textarea style="width:800px; height:550px;">
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Page-Enter" content="blendTrans(Duration=1.0)"/>
+    <meta name="page-view-size" content="1280*720" />
+    <title>EPG 5.0</title>
+    <style>
+        body{
+            margin: 0;
+            font-family: "Microsoft YaHei", Heiti, SimSun;
+            text-rendering: optimizeSpeed;
+            -webkit-text-rendering: optimizeSpeed;
+            text-rendering: optimizeSpeed;
+        }
+        img {
+            image-rendering:-webkit-optimize-contrast;
+            -webkit-image-rendering:-webkit-optimize-contrast;
+        }
+        header {
+            padding-top: 20px;
+            padding-left: 35px;
+            color: #ffffff;
+            font-size: 20px;
+            height: 42px;
+        }
+        header>.logo {
+            width: 108px;
+            height: 26px;
+            float: left;
+            background-image: url(images/case/logo.png);
+        }
+        header>.status {
+            margin-left: 818px;
+            line-height: 26px;
+        }
+        header .weather {
+            float: left;
+        }
+        header .district {
+            margin: 0 28px;
+        }
+        header .desc {
+            padding-left: 36px;
+            background-image: url(images/case/weather-icon.png);
+            background-repeat: no-repeat;
+            margin: 0 5px;
+        }
+        header .time {
+            margin-left: 326px;
+        }
+        .bg {
+            width: 1280px;
+            height: 720px;
+            top: 0px;
+            left: 0px;
+            z-index: -1;
+            position: absolute;
+            opacity:0;
+            -webkit-transition-property:opacity;
+            -webkit-transition-duration: .5s;
+        }
+        .patch {
+            -webkit-transform: translate3d(0px,0px,0px);
+        }
+        .main {
+            height: 640px;
+            overflow-y: hidden;
+        }
+        .main>.navbar {
+            width: 145px;
+            padding-left: 30px;
+            padding-top: 20px;
+            float: left;
+            position: relative;
+            -webkit-transform: translate3d(0px,0px,0px);
+        }
+        .main .nav-item {
+            color: #E6E6E6;
+            font-size: 28px;
+            text-align: center;
+            line-height: 50px;
+            margin: 16px 0px;
+        }
+        .main .nav-focus {
+            background-color: #269CE6;
+            border-radius: 50px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: transparent;
+            position: absolute;
+            height: 50px;
+            width: 145px;
+            z-index: -1;
+            top: 96px;
+            left: 28px;
+            -webkit-transition-property:-webkit-transform;
+            -webkit-transform: translate3d(0px,0px,0px);
+            -webkit-transition-duration: .3s;
+        }
+        .main .nav-focus.on {
+            box-shadow: 0 0 20px #000;
+            border-color: #ffffff;
+        }
+        .main .nav-item.looming {
+            opacity: .4;
+        }
+        .main .nav-item.selected {
+            color: #FFFFFF;
+            opacity: 1;
+        }
+        .roller {
+            margin-left: 188px;
+            -webkit-transform: translate3d(0px,0px,0px);
+            -webkit-transition-property:-webkit-transform;
+            -webkit-transition-duration: .2s;
+        }
+        .main .content {
+            height: 640px;
+        }
+        .marquee {
+            position: absolute;
+            white-space: nowrap;
+            -webkit-transform: translate3d(0, 0, 0);
+        }
+        .marquee>span {
+            padding-right: 56px;
+        }
+        .item {
+            margin: 0px 2px 4px 2px;
+            background-repeat: no-repeat;
+            color: #eeeeee;
+            font-size: 20px;
+            position: relative;
+            -webkit-transform: translate3d(0px,0px,0px);
+            -webkit-transition-property:-webkit-transform;
+            -webkit-transition-duration: .2s;
+        }
+        .item.on {
+            z-index: 1;
+            -webkit-transform: translate3d(0px,0px,0px) scale(1.1);
+        }
+        .item > .title {
+            background-image: url(images/case/title-bg.png);
+            line-height: 42px;
+            padding-left: 20px;
+            height: 42px;
+            color: #555555;
+        }
+        .item > .text {
+            line-height: 40px;
+            height: 40px;
+            padding: 0px 12px;
+            background-image: url(images/case/post_bg.png);
+        }
+        .large {
+            height: 100%;
+            position: relative;
+            overflow-x: hidden;
+        }
+        .item.on > .text {
+            background-image: url(images/case/text-bg.png);
+        }
+
+        .item.on .marquee {
+            -webkit-animation-delay:1s;
+            -webkit-animation-name:marquee;
+            -webkit-animation-duration:6s;
+            -webkit-animation-timing-function:linear;
+            -webkit-animation-iteration-count:infinite;
+        }
+        
+        .item > .title {
+            background-image: url(images/case/title-bg.png);
+            line-height: 42px;
+            padding-left: 20px;
+            height: 42px;
+            color: #555555;
+        }
+        .itemX1 {
+            height: 40px;
+            padding-top: 140px;
+        }
+        .itemX2 {
+            padding-top: 284px;
+            height: 80px;
+        }
+        .itemX2 > .sub-title {
+            background-color: #ffffff;
+            line-height: 20px;
+            padding: 0px 20px;
+            height: 38px;
+            font-size: 16px;
+            color: #999999;
+        }
+        .itemX3 {
+            padding-top: 424px;
+            height: 124px;
+        }
+        .itemX3 > .sub-title {
+            background-color: #ffffff;
+            line-height: 20px;
+            padding: 0px 20px;
+            height: 82px;
+            font-size: 16px;
+            color: #999999;
+        }
+        
+        .col {
+            float: left;
+            margin-right: 12px;
+        }
+        .col-title {
+            color: #fff;
+            font-size: 28px;
+            line-height: 50px;
+            height: 50px;
+            padding-left: 20px;
+        }
+        
+        .squareX1{
+            width: 144px;
+            float: left;
+        }
+        .squareX2{
+            width: 288px;
+            float: left;
+        }
+        .squareX3{
+            width: 432px;
+            float: left;
+        }
+        .squareX4{
+            width: 576px;
+            float: left;
+        }
+        .trailer-post {
+            margin: -1px 2px 4px 2px;
+            width: 572px;
+            height: 364px;
+        }
+        .trailer-post .trailer {
+            width: 572px;
+            height: 322px;
+            position: relative;
+            overflow: hidden;
+        }
+        .trailer-post .trailer>img {
+            position: absolute;
+            opacity: 0;
+            -webkit-transition-property:opacity;
+            -webkit-transition-duration: .5s;
+        }
+        .trailer-post .trailer>img.on {
+            opacity: .99;
+        }
+        .trailer-post .title {
+            line-height: 42px;
+            padding-left: 12px;
+            padding-right: 26px;
+            font-size: 18px;
+            color: #ffffff;
+            background-image: url(images/case/post_bg.png);
+        }
+        .trailer-post .title > .status {
+            float: right;
+        }
+        #loading {
+            width:64px;
+            height:64px;
+            left: 588px;
+            top: 248px;
+            z-index: 1;
+            position: absolute;
+            -webkit-transform:translate3D(0px,0px,0px);
+        }
+        .title > .status > i {
+            display: inline-block;
+            padding: 3px;
+            margin-right: 6px;
+            background-color: #333333;
+            border-radius: 50%;
+        }
+        .title > .status > i.on {
+            background-color: #ffffff;
+        }
+        .focus {
+            top: 0px;
+            position: absolute;
+            border-style: solid;
+            border-width: 4px;
+            border-color: #ffffff;
+            box-shadow: 0 0 20px #000;
+            -webkit-transform: translate3d(-8px,0px,0px);
+            -webkit-transition-property:-webkit-transform;
+        }
+        .horse {
+            line-height: 34px;
+            height: 34px;
+            border-radius: 50px;
+            width: 800px;
+            margin-bottom: 16px;
+            margin-left: 158px;
+            overflow-y: hidden;
+            font-size: 18px;
+            padding-left: 50px;
+            color: #ddd;
+            position: relative;
+            background-color: rgba(0,0,0,0.3);
+            background-image: url(images/case/index_message2.png);
+            background-repeat: no-repeat;
+        }
+        .roller-y {
+            position: absolute;
+            -webkit-transform: translate3d(0px,0px,0px);
+        }
+        #news .list {
+            width: 876px;
+            height: 368px;
+        }
+        #news .trailer-post {
+            margin-right: 0px;
+            float: left;
+        }
+        #news .news-list {
+            margin-left: 574px;
+            background-color: rgba(0,0,0,0.2);
+            line-height: 54px;
+            color: #eee;
+            font-size: 18px;
+        }
+        #news .news-item {
+            height: 54px;
+            padding: 0px 12px;
+            margin-right: 2px;
+        }
+        #news .news-item.on {
+            background-color: #BF0000;
+        }
+        #news .news-item.selected .marquee {
+            -webkit-animation-delay:1s;
+            -webkit-animation-name:marquee;
+            -webkit-animation-duration:6s;
+            -webkit-animation-timing-function:linear;
+            -webkit-animation-iteration-count:infinite;
+        }
+        #news .news-more {
+            line-height: 40px;
+            padding-right: 16px;
+            font-size: 28px;
+            text-align: right;
+            color: #ffffff;
+            background-image: url(images/case/post_bg.png);
+        }
+        .anm-up-focus {
+            -webkit-animation: focus_up_rebound .3s;
+        }
+        .anm-up-nav {
+            -webkit-animation: nav_up_rebound .3s;
+        }
+        .anm-focus {
+            -webkit-animation: focus_rebound .3s;
+        }
+        .anm-nav {
+            -webkit-animation: nav_rebound .3s;
+        }
+        @-webkit-keyframes focus_rebound {
+            0% {-webkit-transform: translate3d(0px, 528px, 0px);}
+            45% {-webkit-transform: translate3d(0px, 558px, 0px);}
+            100% {-webkit-transform: translate3d(0px, 528px, 0px);}
+        }
+        @-webkit-keyframes nav_rebound {
+            0% {-webkit-transform: translate3d(0px, 0px, 0px);}
+            45% {-webkit-transform: translate3d(0px, -30px, 0px);}
+            100% {-webkit-transform: translate3d(0px, 0px, 0px);}
+        }
+        @-webkit-keyframes focus_up_rebound {
+            0% {-webkit-transform: translate3d(0px, 0px, 0px);}
+            45% {-webkit-transform: translate3d(0px, -30px, 0px);}
+            100% {-webkit-transform: translate3d(0px, 0px, 0px);}
+        }
+        @-webkit-keyframes nav_up_rebound {
+            0% {-webkit-transform: translate3d(0px, 0px, 0px);}
+            45% {-webkit-transform: translate3d(0px, 30px, 0px);}
+            100% {-webkit-transform: translate3d(0px, 0px, 0px);}
+        }
+        @-webkit-keyframes marquee {
+            from {-webkit-transform: translate3d(0, 0, 0);}
+            to {-webkit-transform: translate3d(-50%, 0, 0);}
+        }
+    </style>
+</head>
+<body>
+    <div class="window">
+        <div class="bg" style="background-image: url(images/case/bg-1.2.png);opacity:1"></div>
+        <header>
+            <div class="logo"></div>
+            <div class="status">
+                <div class="weather">
+                    <span class="district">上海</span>
+                    <span class="desc">晴转多云</span>
+                    <span class="t">28 &#8451; </span>
+                </div>
+                <div class="time">--:--</div>
+            </div>
+        </header>
+        <div class="main">
+            <div class="nav-focus" style="-webkit-transform: translate3d(0px,66px,0px)"></div>
+            <div class="navbar" id="navbar" name="fset-main" cache="1">
+                <div class="nav-item" name="fnode-navbar" y="0">我的</div>
+                <div class="nav-item selected" name="fnode-navbar" y="1">首页</div>
+                <div class="nav-item" name="fnode-navbar" y="2">电影</div>
+                <div class="nav-item" name="fnode-navbar" y="3">剧集</div>
+                <div class="nav-item" name="fnode-navbar" y="4">资讯</div>
+                <div class="nav-item" name="fnode-navbar" y="5">娱乐</div>
+                <div class="nav-item" name="fnode-navbar" y="6">体育</div>
+                <div class="nav-item" name="fnode-navbar" y="7">少儿</div>
+                <div class="nav-item looming" name="fnode-navbar" y="8">游戏</div>
+            </div>
+            <div class="roller">
+                <div class="content" id="index">
+                    <div class="col">
+                        <div class="squareX1">
+                            <div class="col-title">首页</div>
+                            <div class="item itemX1" name="fnode-index" style="background-image: url(images/case/static/b1.jpg)"><div class="text">直播</div></div>
+                            <div class="item itemX1" name="fnode-index" y="1" style="background-image: url(images/case/static/b2.jpg)" url="index_1080p.html"><div class="text">搜索</div></div>
+                            <div class="item itemX1" name="fnode-index" y="2" style="background-image: url(images/case/static/b3.jpg)" url="sitemap.html"><div class="text">全部分类</div></div>
+                        </div>
+                    </div>
+                    <div class="index-right">
+                        <div class="col-title horse" style="margin-left: 158px;">
+                            <div class="roller-y">
+                                <div class="message">李克强：决不能让落后产能挤占先进产能</div>
+                                <div class="message">白宫新闻官刚任命便辞职 或因发生婚外情</div>
+                                <div class="message">沪一超市班车起火 车头陷入火海幸无人员伤亡</div>
+                                <div class="message">李克强：决不能让落后产能挤占先进产能</div>
+                            </div>
+                        </div>
+                        <div class="col-content">
+                            <div class="col">
+                                <div class="trailer-post"  name="fnode-index" x="1,2,3,4" y="0,1" id="trailer_area">
+                                    <div class="trailer" title="美国队长强势归来，嗨翻全场" code="Umai:PROG/1461@BESTV.STA.SMG">
+                                        <img class="patch" src="images/case/play2.jpg" style="opacity:1"/>
+                                    </div>
+                                    <div class="title"><span>Bestv EPG5.0  为您呈现百变新视界</span></div>
+                                </div>
+                                <div class="squareX1"><div class="item itemX1" name="fnode-index" y="2" x="1" style="background-image: url(images/case/static/b4.jpg)"><div class="text">NBA</div></div></div>
+                                <div class="squareX1"><div class="item itemX1" name="fnode-index" y="2" x="2" style="background-image: url(images/case/static/b5.jpg)"><div class="text">英超联赛</div></div></div>
+                                <div class="squareX1"><div class="item itemX1" name="fnode-index" y="2" x="3" style="background-image: url(images/case/static/b6.jpg)"><div class="text">迪斯尼</div></div></div>
+                                <div class="squareX1"><div class="item itemX1" name="fnode-index" y="2" x="4" style="background-image: url(images/case/static/b7.jpg)"><div class="text">新东方</div></div></div>
+                            </div>
+                            <div class="col">
+                                <div class="squareX2">
+                                    <div class="item itemX1" name="fnode-index" x="5,6" style="background-image: url(images/case/static/b8.jpg)"><div class="text">NBA-限时折扣套餐</div></div>
+                                    <div class="item itemX1" name="fnode-index" x="5,6" y="1" style="background-image: url(images/case/static/b9.jpg)">
+                                        <div class="text">
+                                            <div class="large">
+                                                <div class="marquee">
+                                                    <span>环球军情-局座透析南海局势以及最新动向</span>
+                                                    <span>环球军情-局座透析南海局势以及最新动向</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="item itemX1" name="fnode-index" x="5,6" y="2" style="background-image: url(images/case/static/b10.jpg)"><div class="text">迪斯尼-疯狂动物城</div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="focus"></div>
+            
+        </div>
+    </div>
+</body>
+</html>
+    </textarea>
+<br>
+<br>
+</div>
+</div>
+<div class="doc">
+  <div class="name"><a id="notice">注意事项</a></div>
+  <div class="content">1.元素属性z-index的约定：<br>
+    BJF前端框架里，debug层的z-index是99999，focusUI光标框的z-index是99998，所以BJG前端框的元素的框的z-index会在5位数选取，约定页面元素的z-index属性设置不超过9999。
+    2.CSS属性定义<br>
+    <br>
+    如果使用CSS属性定义，推荐使用嵌入样式表的方式，尤其是在标清机顶盒上应用。即在HTML文档中的BODY标签之前定义。CSS属性定义的另外两种方式都不是很适合在IPTV领域使用：<br>
+    1）链接外部样式表方式，在网络状况不稳定等情况下，导致整体网页解析速度很慢；<br>
+    2）内联样式定义方式，导致浏览器在解析HTML文档的过程中，频繁切换CSS解析模块和HTML解析模块，尤其在这种定义较多的情况下，特别影响网页解析速度。现在，随着机顶盒的性能提高，在高清机顶盒上基本上可以普遍应用这种方式。<br>
+    <br>
+    3.背景图片的使用<br>
+    <br>
+    应避免使用小图片大量平铺的方式来定义背景图片。大量的repeat工作，会使浏览器变得很慢。<br>
+    <br>
+    4.< a>链接<br>
+    <br>
+    首先是< a>链接的显示，各个机顶盒不统一。
+    
+    嵌入式浏览器中，对图片链接，会在图片周围加一个黄框表示焦点位置；对文字链接，会在文字所在区域加黄色底色来表示焦点位置。所以如果链接面积很大，呈现在页面中的效果是很难看的。建议在页面中，定义图片链接的尺寸，对文字链接，也定义背景图片来提示焦点。<br>
+    或者使用BJF前端框架的focus模块，框架会做好适配工作。<br>
+    5.页面信息量的控制<br>
+    <br>
+    在新闻页面或其它一些航班查询等页面，容易出现信息量过大、文字太小、看不清楚的情况。页面总体高度很大，浏览器上下滚动比较费时，用户看起来也很吃力。建议分成多页显示。<br>
+    <br>
+    6.页面中INPUT标签的位置<br>
+    <br>
+    应避免将INPUT标签放在页面中第一个焦点所在的位置。在嵌入式浏览器中，当遇到INPUT标签,有的机顶盒会自动打开输入法窗口。如果页面刚呈现出来就有输入法窗口在那摆起，页面的整体效果当然很难看。<br>
+    <br>
+    7.避免使用宽度为1px的细线<br>
+    <br>
+    宽度为1px的细线，在电视上显示会出现抖动。比如图片中的某一部分使用到了金属拉丝效果，同样会产生抖动。一般建议线条要2-3像素以上。<br>
+    <br>
+    8.颜色的使用<br>
+    <br>
+    一些颜色的重叠使用，会造成电视上显示的抖动。比如蓝底黄字、蓝底红字。<br>
+    <br>
+    9.marquee的使用<br>
+    <br>
+    marquee是字幕滚动效果最简洁的实现方式。但是同一个页面内使用多个marquee标签，会对嵌入式浏览器的刷新机制造成挑战，而出现滚动内容显示闪烁或内容滚动过程中一走一停顿的现象。同时，页面滚动的东西太多，给人杂乱无章的感觉。<br>
+    <br>
+    10.字体的使用<br>
+    <br>
+    嵌入式浏览器对文字的字体和大小的支持是有限的，通常只支持一种字体，几种大小的字号。这是由嵌入式系统资源有限造成的。字库分为两种：点阵字库和矢量字库，前者不能放大，一个字库只支持一个大小的字号；后者能够随意放大，一个字库可支持所有大小的字号，但是非常占用空间。嵌入式浏览器通常使用几个常用大小的点阵字库以节省空间。<br>
+    建议EPG制作者使用黑体，不要使用太多的字号。<br>
+    <br>
+    12.body背景色的使用<br>
+    <br>
+    页面默认的body的背景色为白色，在不同页面切换的过程中，会在一定程度上给用户一种白屏闪烁的不好效果，所以给页面body定义一个和该页面整体颜色相近的背景颜色可以有效缓解这个问题。<br>
+    <br>
+    13.页面嵌入小窗口视频<br>
+    <br>
+    页面嵌入小窗口视频，给人不错的感觉。但是不要让视频片段的内容跟随焦点的变换而变换，这样频繁的操作，需要播放器的不停的切换片源和退出，这些都需要一定的时间，所产生的效果反而不佳。<br>
+    <br>
+    14.代码的精简、减少嵌套<br>
+    <br>
+    任何冗余代码，都要浏览器去解析执行。table的层层嵌套，iframe的层层嵌套等等，都会影响页面的呈现速度。嵌入式设备使用的EPG，应该力求代码简洁规范。<br>
+    <br>
+    15.页面编码<br>
+    <br>
+    页面编码混乱，就需要浏览器进行容错，降低了效率，并且很容易出错。在页面内指定编码格式是个不错的习惯。<br>
+    <br>
+    16.汉字路径的使用<br>
+    <br>
+    文件路径中最好避免使用汉字路径，汉字容易造成编码问题。如果浏览器没有实现对汉字路径的支持，会造成某些文件无法正常访问。<br>
+    <br>
+  </div>
+  <div class="demo"></div>
+</div>
+<div class="doc">
+  <div class="name"><a id="refer">参考文档</a></div>
+  <div class="content">
+  <a href="IPTV_technical_specification-V3.0.pdf" target="_blank">IPTV_技术规范-V3.0.pdf</a>
+  <br>
+<br>
+<a href="https://wiki.bestv.com.cn/pages/viewpage.action?pageId=44269613" target="_blank">CSS样式表嵌入到EPG页面中的几种方法</a></div>
+  <div class="demo"></div>
+</div>
+<script src="../xdoc/highlight/highlight.pack.js"></script>
+<script>
+        hljs.initHighlightingOnLoad();
+    </script>
+</body>
+</html>

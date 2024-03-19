@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>bjf focus demo</title>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+        .main {
+            width: 1230px;
+            height: 670px;
+            padding: 50px 0 0 50px;
+            background-color: #000;
+        }
+        .left {
+            width: 200px;
+            float: left;
+            height: 600px;
+            background-color: #333;
+        }
+        .right {
+            height: 560px;
+            margin-left: 250px;
+            width: 880px;
+            padding: 20px;
+            background-color: #333;
+        }
+        .menu {
+            width: 162px;
+            background-color: #aaa;
+            height: 50px;
+            margin: 44px 20px;
+        }
+        .item {
+            width: 252px;
+            height: 102px;
+            background-color: #aaa;
+            margin: 20px;
+            float: left;
+        }
+        .on {
+            background-color: #fff;
+        }
+        .ron {
+            background-color: red;
+        }
+        .focus {
+            left: 0;
+            top: 0;
+            position: absolute;
+            visibility: hidden;
+            border: 3px solid #E8D61D;
+            border-radius: 6px;
+            box-shadow: #E8D61D 0px 0px 6px;
+            -webkit-transform: translate3d(0,0,0);
+            -webkit-backface-visibility: hidden;
+        }
+    </style>
+</head>
+<body>
+<div class="main" id="main_focus">
+    <div class="left" name="fset-main_focus" id="left" cache="1">
+        <div class="menu" name="fnode-left" y="0"></div>
+        <div class="menu" name="fnode-left" y="1"></div>
+        <div class="menu" name="fnode-left" y="2"></div>
+        <div class="menu" name="fnode-left" y="3"></div>
+        <div class="menu" name="fnode-left" y="4"></div>
+        <div class="menu" name="fnode-left" y="5"></div>
+    </div>
+
+    <div class="right" name="fset-main_focus" id="right" x="1">
+        <div class="item" name="fnode-right" x="0" y="0"></div>
+        <div class="item" name="fnode-right" x="1" y="0"></div>
+        <div class="item" name="fnode-right" x="2" y="0"></div>
+        <div class="item" name="fnode-right" x="0" y="1"></div>
+        <div class="item" style="width: 542px;height: 244px;" name="fnode-right" x="1,2" y="1,2"></div>
+        <div class="item" style="margin-top: -126px;" name="fnode-right" x="0" y="2"></div>
+        <div class="item" name="fnode-right" x="0" y="3"></div>
+        <div class="item" name="fnode-right" x="1" y="3"></div>
+        <div class="item" name="fnode-right" x="2" y="3"></div>
+    </div>
+</div>
+<div class="focus">
+</div>
+<script src="../base/bjf.js"></script>
+<script src="../remoter/remoter.js"></script>
+<script src="../focus/focus.js"></script>
+<script src="../debug/debug.js"></script>
+<script>
+    bjf.openDebug();
+    var main_focus = new FocusNode({id:'main_focus'});
+    bjf.focus.build(bjf.$('.main'), main_focus);
+    bjf.focus.eventDefault.on = function () {
+        this.data.ele.classList.add('on');
+    };
+    bjf.focus.eventDefault.lost = function () {
+        this.data.ele.classList.remove('on');
+    };
+    bjf.focus.eventDefault.ok = function () {
+        bjf.debug('bjf.focus.eventDefault ok');
+    };
+    bjf.focus.addEventListener('left', {
+        'child_on' : function () {
+            this.data.ele.classList.add('ron');
+        },
+        'child_lost' : function() {
+            this.data.ele.classList.remove('ron');
+        },
+        'enter' : function () {
+                bjf.debug('enter left');
+        }
+    });
+    bjf.focus.addEventListener('right', 'enter', function () {
+//            bjf.debug('enter right');
+    });
+    bjf.focus.init(main_focus.getFirstChild());
+    //bjf.debug(bjf.focus.node);
+    //bjf.debug(main_focus);
+</script>
+</body>
+</html>

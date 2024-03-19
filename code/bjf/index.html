@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bestv Javascript Framework BJF前端框架官方首页</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: "Microsoft yahei";
+        }
+        header {
+            background: linear-gradient(45deg,#D01D0A 0,#A54F06 100%);
+            padding-top: 18px;
+            height: 150px;
+            color: #fff;
+            overflow-x: hidden;
+            position: relative;
+        }
+        header::after {
+            content: '';
+            display: block;
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            opacity: .78;
+            height: 168px;
+            animation-delay:3s;
+            animation-name:move;
+            animation-duration:6s;
+            animation-timing-function:linear;
+            animation-iteration-count:infinite;
+            background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAAwCAYAAADgvwGgAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOdAAADnQBaySz1gAAABZ0RVh0Q3JlYXRpb24gVGltZQAxMS8yOS8xNoOwZNQAAAAfdEVYdFNvZnR3YXJlAE1hY3JvbWVkaWEgRmlyZXdvcmtzIDi1aNJ4AAABi0lEQVRYhe2WXU/CMBSGn445JohBvfbK//+/JBEUZXxjvTinWpGPtgMuzN6kyVja87TvWehrrLVPwACYcF71jLU2B66BFlABqxNDroAusDHWWv9lD9gAH8BnTUim9Vpab+XDnDrISRekW3sDFMAcmLqXu2AAxltQ6aIQlYhlS93or+L7YE65Qg1ixfrAvJ4Wn+ybdwzm1NYdrxXqFhmF5IgDi0NFQmFOXcSqyvs9w+vLKWEgX9mDPg+J+GrzWJIWn3nPwcoSYCC9ilYqLAlYBxatBtbAGtg/g6X8EcPWDRyq1JO1dUQp9j5rAfdIEgOJfSMkkZ0UdofczO86AG51VMDrKWBdoI8krBF/+5XpRkrgjZ/IEAUrkOvfItf/saRcIBYbnb8MgWW6qI1YExRmPHWQky4QJ76jwzasj9g2JaAHR+R6/AGMfViJWLYCXqif851cEiuAobHWPiL+jgmP2bEqgX6ONHRwJojTHHjO2PHVnEsZiRkwFXYxNbAG1sAaWD1YUgZMhRWXgn0Bzcp/KVyIREcAAAAASUVORK5CYII=);
+        }
+        .name {
+            font-size: 50px;
+            text-align: center;
+            line-height: 88px;
+            width: 90px;
+            margin: auto;
+            border-radius: 50%;
+            background-color: rgba(247, 136, 5, 0.34);
+        }
+        .title {
+            text-align: center;
+            font-size: 20px;
+            line-height: 38px;
+        }
+        .main {
+            padding-top: 50px;
+        }
+        .model {
+            width: 60%;
+            max-width: 820px;
+            margin: auto;
+        }
+        .model > div {
+            width: 182px;
+            float: left;
+            text-align: center;
+            border: 1px solid #CB2209;
+            margin: 10px 10px;
+            border-radius: 6px;
+            line-height: 50px;
+            cursor: pointer;
+        }
+        .download.selected {
+            border: 1px solid #3BF336;
+        }
+        .download {
+            width: 182px;
+            line-height: 50px;
+            text-align: center;
+            margin: 50px auto 0px auto;
+            border: 1px solid #999;
+            border-radius: 6px;
+            color: #000;
+        }
+        .download > a {
+            text-decoration: none;
+        }
+        footer {
+            position: fixed;
+            bottom: 0;
+            text-align: center;
+            width: 100%;
+            line-height: 50px;
+            background-color: #fff;
+        }
+        footer a {
+            margin: 0 10px;
+        }
+        @keyframes move {
+            0% {transform: translate3d(0, 0, 0);opacity: .82}
+            50% {transform: translate3d(13px, 0, 0);opacity: .38}
+            100% {transform: translate3d(27px, 0, 0);opacity: .82}
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="name">BJF</div>
+        <div class="title">最高效，最强大，最便捷的TV前端框架</div>
+    </header>
+    <div class="main">
+        <div class="model">
+            <div class="model_base">Base</div>
+            <div class="model_debug">Debug</div>
+            <div class="model_storage">Storage</div>
+            <div class="model_remoter">Remoter</div>
+            <div class="model_focus">Focus</div>
+            <div class="model_focusUI">FocusUI</div>
+            <div class="model_player">Player</div>
+            <div class="model_playerUI">PlayerUI</div>
+            <br style="clear:both;">
+        </div>
+        <!-- <div class="download"><a target="_blank" href="">获取</a></div> -->
+    </div>
+    <footer>
+        <a href="document.html">使用手册</a>
+        <a href="advanced.html">进阶技巧</a>
+        <a href="doc/document_base.html">机顶盒前端页面开发指引</a>
+        <a href="http://10.61.13.146:7990/projects/BFT/repos/bjf_pack/browse/code/bjf">从git上克隆</a>
+    </footer>
+    <script src="base/bjf.js"></script>
+    <script>
+        var _models = document.querySelectorAll('.model > div'), _len = _models.length, _d = document.querySelector('.download');
+        for(var i = 0; i < _len; i++) {
+            _models[i].addEventListener('click', function() {
+                location.href = 'document.html#' + this.className.replace('model_', '');
+            });
+        }
+        bjf.get('/vistools/bjf_build/history.php?last=1', function(v) {
+            _d.classList.add('selected');
+            _d.querySelector('a').href = '/vistools/bjf_build/output/bjf.' + v + '.min.js';
+            _d.querySelector('a').innerText = '获取最新版(v' + v + ')';
+        });
+    </script>
+</body>
+</html>

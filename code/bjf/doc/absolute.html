@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>机顶盒前端页面开发指引</title>
+<link rel="stylesheet" href="../xdoc/demo.css">
+<link rel="stylesheet" href="../xdoc/highlight/styles/monokai-sublime.css">
+<style type="text/css">
+textarea {
+	background: #23241f;
+	color: #a6e22e;
+	border: #23241f;
+	padding: 10px;
+}
+</style>
+</head>
+<body>
+<div class="h1">绝对定位</div>
+<div class="desc"> 绝对定位使元素的位置与文档流无关，因此不占据空间。这一点与相对定位不同，相对定位实际上被看作普通流定位模型的一部分，因为元素的位置相对于它在普通流中的位置。<br>
+
+
+普通流中其它元素的布局就像绝对定位的元素不存在一样：
+</div>
+<textarea style="width:800px; height:300px;">
+<style type="text/css">
+.box{
+	width:300px;
+	height:100px;
+	background:#FCF;
+	margin:10px;
+	}
+#box2 {
+  position: absolute;
+  left: 30px;
+  top: 20px;
+  background:#FFC
+}
+</style>
+<div id="box1" class="box">1</div>
+<div id="box2" class="box">2</div>
+<div id="box3" class="box">3</div>
+</textarea>
+<style type="text/css">
+.box{
+	width:300px;
+	height:100px;
+	background:#FCF;
+	margin:10px;
+	padding:10px;
+	}
+#box2 {
+  position: absolute;
+  left: 30px;
+  top: 20px;
+  background:#FFC
+}
+</style>
+<div id="box1" class="box">1</div>
+<div id="box2" class="box">2</div>
+<div id="box3" class="box">3</div>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>bjf focusUI</title>
+    <link rel="stylesheet" href="../xdoc/demo.css">
+    <link rel="stylesheet" href="../xdoc/highlight/styles/monokai-sublime.css">
+</head>
+<body>
+<div class="h1">bjf focusUI模块</div>
+<div class="desc">该模块将提供管理光标框的显示和隐藏，移动，调整大小等一系列功能和对象。请参考<a target="_blank" href="demo.html">demo演示</a>。
+    <br />光标框系统定义了一系列光标框事件，具体参见<a href="#bjf.focusUI">focusUI事件列表</a>
+</div>
+<div class="title">方法和对象列表：</div>
+<div>
+    <ul>
+        <li><a href="#focusUI" id="bjf.focusUI">bjf.focusUI</a></li>
+        <li><a href="#init">bjf.focusUI.init</a></li>
+        <li><a href="#on">bjf.focusUI.on</a></li>
+        <li><a href="#lost">bjf.focusUI.lost</a></li>
+        <li><a href="#setSize">bjf.focusUI.setSize</a></li>
+        <li><a href="#setOffset">bjf.focusUI.setOffset</a></li>
+        <li><a href="#setPostBy">bjf.focusUI.setPostBy</a></li>
+        <li><a href="#setGap">bjf.focusUI.setGap</a></li>
+        <li><a href="#setPost">bjf.focusUI.setPost</a></li>
+    </ul>
+</div>
+<div class="title">方法和对象说明：</div>
+<div class="doc">
+    <div class="name"><a id="focusUI"></a>bjf.focusUI</div>
+    <div class="content">bjf.focusUI是一个控制光标框的显示和隐藏，移动，调整大小等一系列功能的对象 </div>
+    <div class="demo">
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="init"></a>bjf.focusUI.init(border_width_, class_name_, user_style_)</div>
+    <div class="content">初始化光标框，设置外框大小</div>
+    <div class="content">@param border_width_ &nbsp;[可选，默认为4]光标边框宽度[int类型]</div>
+    <div class="content">@param class_name_         [可选]光标框的样式名称，通过样式可定义如阴影，圆角，颜色等[string类型]</div>
+    <div class="content">@param user_style_         [可选]光标框DIV的的style属性对象，可直接指定阴影，圆角，颜色等样式[object类型]</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.focusUI.init();
+//bjf.focusUI.init(4, 'focus');  //指定光标框的宽度为4，className=focus
+//bjf.focusUI.init(6, '', {
+    borderColor:'#ff0000', 
+    borderStyle: solid;
+    borderRadius:'20px'
+});//指定光标框的宽度为6，光标框颜色为红色，20px的圆角
+                </code>
+            </pre>
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="on"></a>bjf.focusUI.on()</div>
+    <div class="content">将光标框设置为可见</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.focusUI.on();
+                </code>
+            </pre>
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="lost"></a>bjf.focusUI.lost()</div>
+    <div class="content">隐藏光标框</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.focusUI.lost();
+                </code>
+            </pre>
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="up"></a>bjf.focusUI.setSize(w, h)</div>
+    <div class="content">设置光标框的大小</div>
+    <div class="content">@param w 光标框的宽度[string类型]</div>
+    <div class="content">@param h 光标框的长度[string类型]</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.focusUI.setSize(7, 9);
+                </code>
+            </pre>
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="setPostBy"></a>bjf.focusUI.setPostBy(x_, y_)</div>
+    <div class="content">计算光标框的位置</div>
+    <div class="content">@param x_ 光标节点x坐标[int类型]</div>
+    <div class="content">@param y_ 光标节点y坐标[int类型]</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.focusUI.setPostBy(0, 0);
+                </code>
+            </pre>
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="setGap"></a>bjf.focusUI.setGap(x_, y_)</div>
+    <div class="content">设置光标集合下光标框之间的间距</div>
+    <div class="content">@param x_ 光标框之间x轴上的间距[int类型]</div>
+    <div class="content">@param y_ 光标框之间y轴上的间距[int类型]</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.focusUI.setGap(0, 0);
+                </code>
+            </pre>
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="setPost"></a>bjf.focusUI.setPost(x, y)</div>
+    <div class="content">设置光标框的位置</div>
+    <div class="content">@param x_ 光标框x轴上的位置[int类型]</div>
+    <div class="content">@param y_ 光标框y轴上的位置[int类型]</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.focusUI.setPost(0, 0);
+                </code>
+            </pre>
+    </div>
+</div>
+
+<script src="../xdoc/highlight/highlight.pack.js"></script>
+<script>
+    hljs.initHighlightingOnLoad();
+</script>
+</body>
+</html>

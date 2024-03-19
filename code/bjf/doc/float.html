@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>机顶盒前端页面开发指引</title>
+<link rel="stylesheet" href="../xdoc/demo.css">
+<link rel="stylesheet" href="../xdoc/highlight/styles/monokai-sublime.css">
+<style type="text/css">
+textarea {
+	background: #23241f;
+	color: #a6e22e;
+	border: #23241f;
+	padding: 10px;
+}
+</style>
+</head>
+<body>
+<div class="h1">浮动</div>
+<div class="desc"> 浮动元素不占任何正常文档流空间，而浮动元素的定位还是基于正常的文档流，然后从文档流中抽出并尽可能远的移动至左侧或者右侧。<br>
+  文字内容会围绕在浮动元素周围。当一个元素从正常文档流中抽出后，仍然在文档流中的其他元素将忽略该元素并填补他原先的空间 </div>
+<textarea style="width:800px; height:1000px;">
+<style type="text/css">
+.box{
+	width:300px;
+	height:100px;
+	background:#FCF;
+	margin:10px;
+	padding:10px;
+	}
+.box2{
+	width:50px;
+	height:50px;
+	background:#6C0;
+	margin:10px;
+	padding:10px;
+	}
+#box2,#box3,#box9,#box10,#box12 {
+  float:left;
+  background:#FFC
+}
+#box5 {
+  float:right;
+  background:#FFC
+}
+#box9 {
+  width:50px;
+  height:20px;
+}
+.clearfix { zoom:1;/* Zoom属性是IE浏览器的专有属性，Firefox等浏览器不支持。它可以设置或检索对象的缩放比例。除此之外，它还有其他一些小作用，比如触发ie的hasLayout属性，清除浮动、清除margin的重叠等。 */ }   
+.clearfix:after { content:"."; display:block; height:0; visibility:hidden; clear:both; } 
+.clearit { clear:both; height:0; font-size:0; overflow:hidden; } 
+</style>
+<div id="box1" class="box">1
+  <div id="box9" class="box">9 左浮动</div>
+  <div style="background:#CC6">本元素与左边的浮动元素在同一水平的line boxes都被压缩了，这也是文字环绕图片的原因。</div>
+</div>
+<div id="box2" class="box">2 左浮动</div>
+<div id="box3" class="box">3 左浮动</div>
+<div id="box4" class="box">4 <br>
+  A.元素脱离文档流：float使html元素脱离文档流浮动起来，导致其后面的（在文档流中的）元素占据了float元素的原位置<br>
+  <br>
+  B.内容仍然在文档流：虽然承载内容的元素脱离了文档流，但是其内部内容仍然在文档流中，后续的元素即使占据了我元素的位置，也要为了其中的内容留空间。
+  <div id="box8" class="box2">8</div>
+</div>
+<div id="box5" class="box">5 右浮动</div>
+<div id="box6" class="box">6</div>
+<div id="box7" class="box">7</div>
+<div id="box10" class="box">10 左浮动</div>
+<div class="clearit"></div>
+<div id="box11" class="box">11</div>
+<div class="clearfix">
+  <div id="box12" class="box">12 左浮动</div>
+</div>
+<div id="box13" class="box">13</div>
+</textarea>
+<style type="text/css">
+.box{
+	width:300px;
+	height:100px;
+	background:#FCF;
+	margin:10px;
+	padding:10px;
+	}
+.box2{
+	width:50px;
+	height:50px;
+	background:#6C0;
+	margin:10px;
+	padding:10px;
+	}
+#box2,#box3,#box9,#box10,#box12 {
+  float:left;
+  background:#FFC
+}
+#box5 {
+  float:right;
+  background:#FFC
+}
+#box9 {
+  width:50px;
+  height:20px;
+}
+.clearfix { zoom:1;/* Zoom属性是IE浏览器的专有属性，Firefox等浏览器不支持。它可以设置或检索对象的缩放比例。除此之外，它还有其他一些小作用，比如触发ie的hasLayout属性，清除浮动、清除margin的重叠等。 */ }   
+.clearfix:after { content:"."; display:block; height:0; visibility:hidden; clear:both; } 
+.clearit { clear:both; height:0; font-size:0; overflow:hidden; } 
+</style>
+<div id="box1" class="box">1
+  <div id="box9" class="box">9 左浮动</div>
+  <div style="background:#CC6">本元素与左边的浮动元素在同一水平的line boxes都被压缩了，这也是文字环绕图片的原因。</div>
+</div>
+<div id="box2" class="box">2 左浮动</div>
+<div id="box3" class="box">3 左浮动</div>
+<div id="box4" class="box">4 <br>
+  A.元素脱离文档流：float使html元素脱离文档流浮动起来，导致其后面的（在文档流中的）元素占据了float元素的原位置<br>
+  <br>
+  B.内容仍然在文档流：虽然承载内容的元素脱离了文档流，但是其内部内容仍然在文档流中，后续的元素即使占据了我元素的位置，也要为了其中的内容留空间。
+  <div id="box8" class="box2">8</div>
+</div>
+<div id="box5" class="box">5 右浮动</div>
+<div id="box6" class="box">6</div>
+<div id="box7" class="box">7</div>
+<div id="box10" class="box">10 左浮动</div>
+<div class="clearit"></div>
+<div id="box11" class="box">11</div>
+<div class="clearfix">
+  <div id="box12" class="box">12 左浮动</div>
+</div>
+<div id="box13" class="box">13</div>
+</body>
+</html>

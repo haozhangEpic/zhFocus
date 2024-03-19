@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" href="../xdoc/highlight/styles/monokai-sublime.css">
+</head>
+<body>
+    <div>页面代码：</div>
+    <pre>
+        <code class="javascript">
+bjf.openDebug();
+bjf.remoter.onKeyUp(function (e) {
+    bjf.debug('up 1');
+});
+bjf.remoter.onKeyUp(function (e) {
+    bjf.debug('up 2');
+});
+bjf.remoter.onKeyDown(function (e) {
+    bjf.debug('Down 1');
+    e.safeStopPropagation();
+});
+bjf.remoter.onKeyDown(function (e) {
+    bjf.debug('Down 2');
+});
+
+bjf.remoter.onKeyBack(function (e) {
+    bjf.debug('back');
+    e.safePreventDefault();
+});
+
+bjf.remoter.onKeyBack(function (e) {
+    bjf.debug('我不会真正返回');
+    e.safePreventDefault();
+});
+        </code>
+    </pre>
+    <div>请保证页面落焦，按上/下/返回键试试!</div>
+    <script src="../debug/debug.js"></script>
+    <script src="remoter.js"></script>
+    <script src="../xdoc/highlight/highlight.pack.js"></script>
+    <script>
+        hljs.initHighlightingOnLoad();
+        bjf.openDebug();
+        bjf.remoter.onKeyUp(function (e) {
+            bjf.debug('up 1');
+        });
+        bjf.remoter.onKeyUp(function (e) {
+            bjf.debug('up 2');
+        });
+        bjf.remoter.onKeyDown(function (e) {
+            bjf.debug('Down 1');
+            e.safeStopPropagation();
+        });
+        bjf.remoter.onKeyDown(function (e) {
+            bjf.debug('Down 2');
+        });
+        
+        bjf.remoter.onKeyBack(function (e) {
+            bjf.debug('back');
+            e.safePreventDefault();
+        });
+        
+        bjf.remoter.onKeyBack(function (e) {
+            bjf.debug('我不会真正返回');
+            e.safePreventDefault();
+        });
+    </script>
+</body>
+</html>

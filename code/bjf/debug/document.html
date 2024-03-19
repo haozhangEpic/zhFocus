@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>bjf base</title>
+    <link rel="stylesheet" href="../xdoc/demo.css">
+    <link rel="stylesheet" href="../xdoc/highlight/styles/monokai-sublime.css">
+</head>
+<body>
+    <div class="h1">bjf debug模块</div>
+    <div class="desc">该模块主要提供在屏幕上输出debug信息的函数或功能
+        <br />具体使用效果可参考<a target="_blank" href="demo.html">示例页面</a>
+    </div>
+    <div class="title">方法和对象列表：</div>
+    <div>
+       <ul>
+            <li><a href="#openDebug">bjf.openDebug</a></li>
+            <li><a href="#debug">bjf.debug</a></li>
+            <li><a href="#cdebug">bjf.cdebug</a></li>
+        </ul>
+    </div>
+    <div class="title">方法和对象说明：</div>
+    <div class="doc">
+        <div class="name"><a id="openDebug"></a>bjf.openDebug</div>
+        <div class="content">开启debug开关，否则使用bjf.debug将不能得到任何输出</div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.openDebug();  //开启debug开关
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="debug"></a>bjf.debug(x)</div>
+        <div class="content">在屏幕上输出需要打印的变量
+            <br />变量可以是任意类型，但是如果是<strong>多维数组</strong>或<strong>多维对象</strong>，将只递归到第二层
+            <br />如果变量是Erron对象，打印信息将会用红色字体标出，如果支持stack的话，还将提示错误发生在js文件的哪一行
+            <br />如果上次的打印信息已经超出屏幕高度了，则下次打印时会自动清空之前打印的类容
+        </div>
+        <div class="content">参数可变，可输出任意个参数，将依次打印</div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.openDebug();
+bjf.debug(a);       //在屏幕上打印变量a，依赖于openDebug。
+bjf.debug(a, b, c); //在屏幕上打印变量a,b,c，依赖于openDebug。
+
+try {
+    //xxx
+}
+catch (e) {
+    bjf.debug(e);   //如此用法会追踪错误信息，并用红色字体标出。
+}
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="cdebug"></a>bjf.cdebug(x)</div>
+        <div class="content">清除屏幕之前的打印关系后，在屏幕上输出需要打印的变量
+        </div>
+        <div class="content">参数可变，可输出任意个参数，将依次打印</div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.openDebug();
+bjf.cdebug(a, b, c); //清除之前的打印信息之后，在屏幕上打印变量a,b,c，依赖于openDebug。
+                </code>
+            </pre>
+        </div>
+    </div>
+    <script src="../xdoc/highlight/highlight.pack.js"></script>
+    <script>
+        hljs.initHighlightingOnLoad();
+    </script>
+</body>
+</html>

@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Page-Enter" content="blendTrans(Duration=1.0)"/>
+    <meta name="page-view-size" content="1280*720" />
+    <title>EPG 5.0</title>
+    <style>
+        body{
+            margin: 0;
+            font-family: "Microsoft YaHei", Heiti, SimSun;
+            text-rendering: optimizeSpeed;
+            -webkit-text-rendering: optimizeSpeed;
+            text-rendering: optimizeSpeed;
+        }
+        img {
+            image-rendering:-webkit-optimize-contrast;
+            -webkit-image-rendering:-webkit-optimize-contrast;
+        }
+        header {
+            padding-top: 20px;
+            padding-left: 35px;
+            color: #ffffff;
+            font-size: 20px;
+            height: 42px;
+        }
+        header>.logo {
+            width: 108px;
+            height: 26px;
+            float: left;
+            background-image: url(images/case/logo.png);
+        }
+        header>.status {
+            margin-left: 818px;
+            line-height: 26px;
+        }
+        header .weather {
+            float: left;
+        }
+        header .district {
+            margin: 0 28px;
+        }
+        header .desc {
+            padding-left: 36px;
+            background-image: url(images/case/weather-icon.png);
+            background-repeat: no-repeat;
+            margin: 0 5px;
+        }
+        header .time {
+            margin-left: 326px;
+        }
+        .bg {
+            width: 1280px;
+            height: 720px;
+            top: 0px;
+            left: 0px;
+            z-index: -1;
+            position: absolute;
+            opacity:0;
+            -webkit-transition-property:opacity;
+            -webkit-transition-duration: .5s;
+        }
+        .patch {
+            -webkit-transform: translate3d(0px,0px,0px);
+        }
+        .main {
+            height: 640px;
+            overflow-y: hidden;
+        }
+        .main>.navbar {
+            width: 145px;
+            padding-left: 30px;
+            padding-top: 20px;
+            float: left;
+            position: relative;
+            -webkit-transform: translate3d(0px,0px,0px);
+        }
+        .main .nav-item {
+            color: #E6E6E6;
+            font-size: 28px;
+            text-align: center;
+            line-height: 50px;
+            margin: 16px 0px;
+        }
+        .main .nav-focus {
+            background-color: #269CE6;
+            border-radius: 50px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: transparent;
+            position: absolute;
+            height: 50px;
+            width: 145px;
+            z-index: -1;
+            top: 96px;
+            left: 28px;
+            -webkit-transition-property:-webkit-transform;
+            -webkit-transform: translate3d(0px,0px,0px);
+            -webkit-transition-duration: .3s;
+        }
+        .main .nav-focus.on {
+            box-shadow: 0 0 20px #000;
+            border-color: #ffffff;
+        }
+        .main .nav-item.looming {
+            opacity: .4;
+        }
+        .main .nav-item.selected {
+            color: #FFFFFF;
+            opacity: 1;
+        }
+        .roller {
+            margin-left: 188px;
+            -webkit-transform: translate3d(0px,0px,0px);
+            -webkit-transition-property:-webkit-transform;
+            -webkit-transition-duration: .2s;
+        }
+        .main .content {
+            height: 640px;
+        }
+        .marquee {
+            position: absolute;
+            white-space: nowrap;
+            -webkit-transform: translate3d(0, 0, 0);
+        }
+        .marquee>span {
+            padding-right: 56px;
+        }
+        .item {
+            margin: 0px 2px 4px 2px;
+            background-repeat: no-repeat;
+            color: #eeeeee;
+            font-size: 20px;
+            position: relative;
+            -webkit-transform: translate3d(0px,0px,0px);
+            -webkit-transition-property:-webkit-transform;
+            -webkit-transition-duration: .2s;
+        }
+        .item.on {
+            z-index: 1;
+            -webkit-transform: translate3d(0px,0px,0px) scale(1.1);
+        }
+        .item > .title {
+            background-image: url(images/case/title-bg.png);
+            line-height: 42px;
+            padding-left: 20px;
+            height: 42px;
+            color: #555555;
+        }
+        .item > .text {
+            line-height: 40px;
+            height: 40px;
+            padding: 0px 12px;
+            background-image: url(images/case/post_bg.png);
+        }
+        .large {
+            height: 100%;
+            position: relative;
+            overflow-x: hidden;
+        }
+        .item.on > .text {
+            background-image: url(images/case/text-bg.png);
+        }
+
+        .item.on .marquee {
+            -webkit-animation-delay:1s;
+            -webkit-animation-name:marquee;
+            -webkit-animation-duration:6s;
+            -webkit-animation-timing-function:linear;
+            -webkit-animation-iteration-count:infinite;
+        }
+        
+        .item > .title {
+            background-image: url(images/case/title-bg.png);
+            line-height: 42px;
+            padding-left: 20px;
+            height: 42px;
+            color: #555555;
+        }
+        .itemX1 {
+            height: 40px;
+            padding-top: 140px;
+        }
+        .itemX2 {
+            padding-top: 284px;
+            height: 80px;
+        }
+        .itemX2 > .sub-title {
+            background-color: #ffffff;
+            line-height: 20px;
+            padding: 0px 20px;
+            height: 38px;
+            font-size: 16px;
+            color: #999999;
+        }
+        .itemX3 {
+            padding-top: 424px;
+            height: 124px;
+        }
+        .itemX3 > .sub-title {
+            background-color: #ffffff;
+            line-height: 20px;
+            padding: 0px 20px;
+            height: 82px;
+            font-size: 16px;
+            color: #999999;
+        }
+        
+        .col {
+            float: left;
+            margin-right: 12px;
+        }
+        .col-title {
+            color: #fff;
+            font-size: 28px;
+            line-height: 50px;
+            height: 50px;
+            padding-left: 20px;
+        }
+        
+        .squareX1{
+            width: 144px;
+            float: left;
+        }
+        .squareX2{
+            width: 288px;
+            float: left;
+        }
+        .squareX3{
+            width: 432px;
+            float: left;
+        }
+        .squareX4{
+            width: 576px;
+            float: left;
+        }
+        .trailer-post {
+            margin: -1px 2px 4px 2px;
+            width: 572px;
+            height: 364px;
+        }
+        .trailer-post .trailer {
+            width: 572px;
+            height: 322px;
+            position: relative;
+            overflow: hidden;
+        }
+        .trailer-post .trailer>img {
+            position: absolute;
+            opacity: 0;
+            -webkit-transition-property:opacity;
+            -webkit-transition-duration: .5s;
+        }
+        .trailer-post .trailer>img.on {
+            opacity: .99;
+        }
+        .trailer-post .title {
+            line-height: 42px;
+            padding-left: 12px;
+            padding-right: 26px;
+            font-size: 18px;
+            color: #ffffff;
+            background-image: url(images/case/post_bg.png);
+        }
+        .trailer-post .title > .status {
+            float: right;
+        }
+        #loading {
+            width:64px;
+            height:64px;
+            left: 588px;
+            top: 248px;
+            z-index: 1;
+            position: absolute;
+            -webkit-transform:translate3D(0px,0px,0px);
+        }
+        .title > .status > i {
+            display: inline-block;
+            padding: 3px;
+            margin-right: 6px;
+            background-color: #333333;
+            border-radius: 50%;
+        }
+        .title > .status > i.on {
+            background-color: #ffffff;
+        }
+        .focus {
+            top: 0px;
+            position: absolute;
+            border-style: solid;
+            border-width: 4px;
+            border-color: #ffffff;
+            box-shadow: 0 0 20px #000;
+            -webkit-transform: translate3d(-8px,0px,0px);
+            -webkit-transition-property:-webkit-transform;
+        }
+        .horse {
+            line-height: 34px;
+            height: 34px;
+            border-radius: 50px;
+            width: 800px;
+            margin-bottom: 16px;
+            margin-left: 158px;
+            overflow-y: hidden;
+            font-size: 18px;
+            padding-left: 50px;
+            color: #ddd;
+            position: relative;
+            background-color: rgba(0,0,0,0.3);
+            background-image: url(images/case/index_message2.png);
+            background-repeat: no-repeat;
+        }
+        .roller-y {
+            position: absolute;
+            -webkit-transform: translate3d(0px,0px,0px);
+        }
+        #news .list {
+            width: 876px;
+            height: 368px;
+        }
+        #news .trailer-post {
+            margin-right: 0px;
+            float: left;
+        }
+        #news .news-list {
+            margin-left: 574px;
+            background-color: rgba(0,0,0,0.2);
+            line-height: 54px;
+            color: #eee;
+            font-size: 18px;
+        }
+        #news .news-item {
+            height: 54px;
+            padding: 0px 12px;
+            margin-right: 2px;
+        }
+        #news .news-item.on {
+            background-color: #BF0000;
+        }
+        #news .news-item.selected .marquee {
+            -webkit-animation-delay:1s;
+            -webkit-animation-name:marquee;
+            -webkit-animation-duration:6s;
+            -webkit-animation-timing-function:linear;
+            -webkit-animation-iteration-count:infinite;
+        }
+        #news .news-more {
+            line-height: 40px;
+            padding-right: 16px;
+            font-size: 28px;
+            text-align: right;
+            color: #ffffff;
+            background-image: url(images/case/post_bg.png);
+        }
+        .anm-up-focus {
+            -webkit-animation: focus_up_rebound .3s;
+        }
+        .anm-up-nav {
+            -webkit-animation: nav_up_rebound .3s;
+        }
+        .anm-focus {
+            -webkit-animation: focus_rebound .3s;
+        }
+        .anm-nav {
+            -webkit-animation: nav_rebound .3s;
+        }
+        @-webkit-keyframes focus_rebound {
+            0% {-webkit-transform: translate3d(0px, 528px, 0px);}
+            45% {-webkit-transform: translate3d(0px, 558px, 0px);}
+            100% {-webkit-transform: translate3d(0px, 528px, 0px);}
+        }
+        @-webkit-keyframes nav_rebound {
+            0% {-webkit-transform: translate3d(0px, 0px, 0px);}
+            45% {-webkit-transform: translate3d(0px, -30px, 0px);}
+            100% {-webkit-transform: translate3d(0px, 0px, 0px);}
+        }
+        @-webkit-keyframes focus_up_rebound {
+            0% {-webkit-transform: translate3d(0px, 0px, 0px);}
+            45% {-webkit-transform: translate3d(0px, -30px, 0px);}
+            100% {-webkit-transform: translate3d(0px, 0px, 0px);}
+        }
+        @-webkit-keyframes nav_up_rebound {
+            0% {-webkit-transform: translate3d(0px, 0px, 0px);}
+            45% {-webkit-transform: translate3d(0px, 30px, 0px);}
+            100% {-webkit-transform: translate3d(0px, 0px, 0px);}
+        }
+        @-webkit-keyframes marquee {
+            from {-webkit-transform: translate3d(0, 0, 0);}
+            to {-webkit-transform: translate3d(-50%, 0, 0);}
+        }
+    </style>
+</head>
+<body>
+    <div class="window">
+        <div class="bg" style="background-image: url(images/case/bg-1.2.png);opacity:1"></div>
+        <header>
+            <div class="logo"></div>
+            <div class="status">
+                <div class="weather">
+                    <span class="district">上海</span>
+                    <span class="desc">晴转多云</span>
+                    <span class="t">28 &#8451; </span>
+                </div>
+                <div class="time">--:--</div>
+            </div>
+        </header>
+        <div class="main">
+            <div class="nav-focus" style="-webkit-transform: translate3d(0px,66px,0px)"></div>
+            <div class="navbar" id="navbar" name="fset-main" cache="1">
+                <div class="nav-item" name="fnode-navbar" y="0">我的</div>
+                <div class="nav-item selected" name="fnode-navbar" y="1">首页</div>
+                <div class="nav-item" name="fnode-navbar" y="2">电影</div>
+                <div class="nav-item" name="fnode-navbar" y="3">剧集</div>
+                <div class="nav-item" name="fnode-navbar" y="4">资讯</div>
+                <div class="nav-item" name="fnode-navbar" y="5">娱乐</div>
+                <div class="nav-item" name="fnode-navbar" y="6">体育</div>
+                <div class="nav-item" name="fnode-navbar" y="7">少儿</div>
+                <div class="nav-item looming" name="fnode-navbar" y="8">游戏</div>
+            </div>
+            <div class="roller">
+                <div class="content" id="index">
+                    <div class="col">
+                        <div class="squareX1">
+                            <div class="col-title">首页</div>
+                            <div class="item itemX1" name="fnode-index" style="background-image: url(images/case/static/b1.jpg)"><div class="text">直播</div></div>
+                            <div class="item itemX1" name="fnode-index" y="1" style="background-image: url(images/case/static/b2.jpg)" url="index_1080p.html"><div class="text">搜索</div></div>
+                            <div class="item itemX1" name="fnode-index" y="2" style="background-image: url(images/case/static/b3.jpg)" url="sitemap.html"><div class="text">全部分类</div></div>
+                        </div>
+                    </div>
+                    <div class="index-right">
+                        <div class="col-title horse" style="margin-left: 158px;">
+                            <div class="roller-y">
+                                <div class="message">李克强：决不能让落后产能挤占先进产能</div>
+                                <div class="message">白宫新闻官刚任命便辞职 或因发生婚外情</div>
+                                <div class="message">沪一超市班车起火 车头陷入火海幸无人员伤亡</div>
+                                <div class="message">李克强：决不能让落后产能挤占先进产能</div>
+                            </div>
+                        </div>
+                        <div class="col-content">
+                            <div class="col">
+                                <div class="trailer-post"  name="fnode-index" x="1,2,3,4" y="0,1" id="trailer_area">
+                                    <div class="trailer" title="美国队长强势归来，嗨翻全场" code="Umai:PROG/1461@BESTV.STA.SMG">
+                                        <img class="patch" src="images/case/play2.jpg" style="opacity:1"/>
+                                    </div>
+                                    <div class="title"><span>Bestv EPG5.0  为您呈现百变新视界</span></div>
+                                </div>
+                                <div class="squareX1"><div class="item itemX1" name="fnode-index" y="2" x="1" style="background-image: url(images/case/static/b4.jpg)"><div class="text">NBA</div></div></div>
+                                <div class="squareX1"><div class="item itemX1" name="fnode-index" y="2" x="2" style="background-image: url(images/case/static/b5.jpg)"><div class="text">英超联赛</div></div></div>
+                                <div class="squareX1"><div class="item itemX1" name="fnode-index" y="2" x="3" style="background-image: url(images/case/static/b6.jpg)"><div class="text">迪斯尼</div></div></div>
+                                <div class="squareX1"><div class="item itemX1" name="fnode-index" y="2" x="4" style="background-image: url(images/case/static/b7.jpg)"><div class="text">新东方</div></div></div>
+                            </div>
+                            <div class="col">
+                                <div class="squareX2">
+                                    <div class="item itemX1" name="fnode-index" x="5,6" style="background-image: url(images/case/static/b8.jpg)"><div class="text">NBA-限时折扣套餐</div></div>
+                                    <div class="item itemX1" name="fnode-index" x="5,6" y="1" style="background-image: url(images/case/static/b9.jpg)">
+                                        <div class="text">
+                                            <div class="large">
+                                                <div class="marquee">
+                                                    <span>环球军情-局座透析南海局势以及最新动向</span>
+                                                    <span>环球军情-局座透析南海局势以及最新动向</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="item itemX1" name="fnode-index" x="5,6" y="2" style="background-image: url(images/case/static/b10.jpg)"><div class="text">迪斯尼-疯狂动物城</div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="focus"></div>
+            
+        </div>
+    </div>
+</body>
+</html>

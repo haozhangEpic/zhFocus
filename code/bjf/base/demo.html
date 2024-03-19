@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>bjf base</title>
+    <link rel="stylesheet" href="../xdoc/highlight/styles/monokai-sublime.css">
+    <style>
+        body {
+            padding-top: 400px;
+        }
+    </style>
+</head>
+<body>
+    <div>页面代码：</div>
+    <pre>
+        <code class="javascript demo">
+bjf.openDebug();
+bjf.debug(bjf.env);
+bjf.debug(bjf.$('.demo'));
+bjf.getJson('test_bak.php', 'jsonp', {b : '123'}, function(data_) {
+    bjf.debug(data_);
+});
+        </code>
+    </pre>
+    <script src="bjf.js"></script>
+    <script src="../debug/debug.js"></script>
+    <script src="../xdoc/highlight/highlight.pack.js"></script>
+    <script>
+        hljs.initHighlightingOnLoad();
+        bjf.openDebug();
+        bjf.debug(bjf.env);
+        bjf.debug(bjf.$('.demo'));
+        bjf.getJson('test_bak.php', 'jsonp', {b : '123'}, function(data_) {
+            bjf.debug(data_);
+        });
+    </script>
+</body>
+</html>

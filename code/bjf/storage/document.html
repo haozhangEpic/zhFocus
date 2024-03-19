@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>bjf base</title>
+    <link rel="stylesheet" href="../xdoc/demo.css">
+    <link rel="stylesheet" href="../xdoc/highlight/styles/monokai-sublime.css">
+</head>
+<body>
+    <div class="h1">bjf storage模块</div>
+    <div class="desc">该模块主要提供页面离线存储类的方法和对象
+        <br />该模块将自动区分系统环境是否支持HTML5，并在不支持的环境中用兼容方法来解决localStorage存储问题。具体使用请参考<a target="_blank" href="demo.html">示例页面</a>
+    </div>
+    <div class="title">方法和对象列表：</div>
+    <div>
+       <ul>
+            <li><a href="#set">bjf.storage.set</a></li>
+            <li><a href="#get">bjf.storage.get</a></li>
+            <li><a href="#remove">bjf.storage.remove</a></li>
+            <li><a href="#clear">bjf.storage.clear</a></li>
+            <li><a href="#getAll">bjf.storage.getAll</a></li>
+            <li><a href="#pageSet">bjf.storage.pageSet</a></li>
+            <li><a href="#pageGet">bjf.storage.pageGet</a></li>
+            <li><a href="#pageRemove">bjf.storage.pageRemove</a></li>
+            <li><a href="#pageClear">bjf.storage.pageClear</a></li>
+            <li><a href="#pageGetAll">bjf.storage.pageGetAll</a></li>
+        </ul>
+    </div>
+    <div class="title">方法和对象说明：</div>
+    <div class="doc">
+        <div class="name"><a id="set"></a>bjf.storage.set(key, value)</div>
+        <div class="content">将变量以key->value形式保存在localStorage中。
+            <br />关于localStorage的生命周期的问题，在H5环境中localStorage将持久，除非被清理。在非H5环境中，用户退出EPG或关闭机顶盒localStorage将被清空。
+            <br />关于localStorage的容量限制，H5环境中尽量限制在5M以内，非H5理论上没有限制。因此统一按5M来限定。
+        </div>
+        <div class="content">@param key    存储的数据所用的key，取数据时需用到</div>
+        <div class="content">@param value  存储的数据，一般只能存储字符串或数字，如果是对象，请序列化后再存储</div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.storage.set('name', 'xidada');
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="get"></a>bjf.storage.get(key)</div>
+        <div class="content">根据key获取之前保存在localStorage的变量</div>
+        <div class="content">@param key    存储的数据所用的key</div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var name = bjf.storage.get('name');
+console.log(name); //xidada
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="remove"></a>bjf.storage.remove(key)</div>
+        <div class="content">根据key删除之前保存在localStorage的变量</div>
+        <div class="content">@param key    存储的数据所用的key</div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.storage.remove('name');
+var name = bjf.storage.get('name');
+console.log(name); //null
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="clear"></a>bjf.storage.clear()</div>
+        <div class="content">清空所有保存在localStorage中的变量</div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.storage.clear();
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="getAll"></a>bjf.storage.getAll()</div>
+        <div class="content">获取所有保存在localStorage中的变量</div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.storage.set('name', 'xidada');
+var data = bjf.storage.getAll();
+console.log(data);                  //{name:'xidada'}
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="pageSet"></a>bjf.storage.pageSet(key, value)</div>
+        <div class="content">将变量以key->value形式保存在localStorage中，且只在当前页面才能获取到</div>
+        <div class="content">关于当前页面的区分，只有同一url才能操作pageSet和pageGet中同名key</div>
+        <div class="content">如果页面url相同，但是post数据不同，也会被视作同一url</div>
+        <div class="content">url的区分，会过滤掉epg_info参数</div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.storage.pageSet('name', 'xidada');
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="pageGet"></a>bjf.storage.pageGet(key)</div>
+        <div class="content">获取保存在当前页面空间中的key对应的值</div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var name = bjf.storage.pageGet('name');
+console.log(name); //xidada
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="pageRemove"></a>bjf.storage.pageRemove(key)</div>
+        <div class="content">删除保存在当前页面空间中的key对应的值</div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.storage.pageRemove('name');
+var name = bjf.storage.get('name');
+console.log(name); //null
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="pageClear"></a>bjf.storage.pageClear()</div>
+        <div class="content">清除所有保存在当前页面空间中的key对应的值</div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.storage.pageClear();
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="pageGetAll"></a>bjf.storage.pageGetAll()</div>
+        <div class="content">清除所有保存在当前页面空间中的key对应的值</div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.storage.pageSet('name', 'xidada');
+var data = bjf.storage.pageGetAll();
+console.log(data);                  //{name:'xidada'}
+                </code>
+            </pre>
+        </div>
+    </div>
+    <script src="../xdoc/highlight/highlight.pack.js"></script>
+    <script>
+        hljs.initHighlightingOnLoad();
+    </script>
+</body>
+</html>

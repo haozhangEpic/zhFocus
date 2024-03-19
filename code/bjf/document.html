@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bestv Javascript Framework BJF前端框架官方首页</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #f0f0f0;
+            font-family: "Microsoft yahei";
+        }
+        header {
+            background: linear-gradient(45deg,#D01D0A 0,#A54F06 100%);
+            height: 36px;
+            padding: 6px 0px;
+            color: #fff;
+        }
+        .name {
+            float: left;
+            width: 40px;
+            font-size: 22px;
+            line-height: 36px;
+            border-radius: 50%;
+            text-align: center;
+            margin-left: 10px;
+            cursor: pointer;
+            background-color: rgba(247, 136, 5, 0.34);
+        }
+        .title {
+            line-height: 36px;
+            margin-left: 90px;
+        }
+        .main {
+            
+        }
+        .left {
+            width: 200px;
+            float: left;
+        }
+        .left > div {
+            line-height: 50px;
+            padding-left: 30px;
+            color: #222;
+            font-size: 16px;
+            cursor: pointer;
+            border-bottom: 1px solid #e6e6e6;
+        }
+        .left > div.on{
+            background-color: #E2E2E2;
+        }
+        .right {
+            margin-left: 200px;
+        }
+        iframe {
+            background-color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="name">BJF</div>
+        <div class="title">最高效，最强大，最便捷的TV前端框架</div>
+    </header>
+    <div class="main">
+        <div class="left">
+            <div class="on" id="introduction">介绍</div>
+            <div id="base">Base</div>
+            <div id="debug">Debug</div>
+            <div id="storage">Storage</div>
+            <div id="remoter">Remoter</div>
+            <div id="focus">Focus</div>
+            <div id="focusUI">FocusUI</div>
+            <div id="player">Player</div>
+            <div id="playerUI">PlayerUI</div>
+        </div>
+        <div class="right">
+            <iframe src="introduction.html" frameborder="0"></iframe>
+        </div>
+    </div>
+    <script>
+        var _f = document.querySelector('iframe'), _models = document.querySelectorAll('.left > div'), _len = _models.length;
+        for(var i = 0; i < _len; i++) {
+            _models[i].addEventListener('click', function() {
+                if (!this.classList.contains('on')) {
+                    document.querySelector('.left .on').classList.remove('on');
+                    this.classList.add('on');
+                    if ('introduction' == this.id) {
+                        _f.src = "introduction.html";
+                    }
+                    else {
+                        _f.src = this.id + "/document.html";
+                    }
+                }
+            });
+        }
+        document.querySelector('.name').addEventListener('click', function () {
+            window.location.href = 'index.html';
+        });
+        
+        if (location.hash) {
+            _f.src = location.hash.substr(1) + "/document.html";
+            document.querySelector('.on').classList.remove('on');
+            document.querySelector('#' + location.hash.substr(1)).classList.add('on');
+        }
+        
+        function setFrameSize() {
+            _f.style.width  = (window.innerWidth - 200) + 'px';
+            _f.style.height = (window.innerHeight - 52) + 'px';
+        }
+        window.onresize = function() {
+            setFrameSize();
+        }
+        setFrameSize();
+    </script>
+</body>
+</html>

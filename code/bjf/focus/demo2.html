@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>bjf focus demo2</title>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+        .main {
+            width: 1230px;
+            height: 670px;
+            padding: 50px 0 0 50px;
+            background-color: #000;
+            overflow-y: hidden;
+        }
+        .left {
+            width: 200px;
+            float: left;
+            height: 600px;
+            background-color: #333;
+        }
+        .right {
+            height: 560px;
+            margin-left: 250px;
+            width: 880px;
+        }
+        .right_sub{
+            height: 560px;
+            margin-bottom: 100px;
+            width: 880px;
+            padding: 20px;
+            background-color: #333;
+        }
+        .menu {
+            width: 162px;
+            background-color: #aaa;
+            height: 50px;
+            margin: 44px 20px;
+        }
+        .item {
+            width: 252px;
+            height: 102px;
+            background-color: #aaa;
+            margin: 20px;
+            float: left;
+        }
+        .on {
+            background-color: #fff;
+        }
+        .ron {
+            background-color: red;
+        }
+        .focus {
+            left: 0;
+            top: 0;
+            position: absolute;
+            visibility: hidden;
+            border: 3px solid #E8D61D;
+            border-radius: 6px;
+            box-shadow: #E8D61D 0px 0px 6px;
+            -webkit-transform: translate3d(0,0,0);
+            -webkit-backface-visibility: hidden;
+        }
+    </style>
+</head>
+<body>
+<div class="main" id="main_focus">
+    <div class="left" name="fset-main_focus" id="left" cache="1">
+        <div class="menu" name="fnode-left" y="0"></div>
+        <div class="menu" name="fnode-left" y="1"></div>
+        <div class="menu" name="fnode-left" y="2"></div>
+        <div class="menu" name="fnode-left" y="3"></div>
+        <div class="menu" name="fnode-left" y="4"></div>
+        <div class="menu" name="fnode-left" y="5"></div>
+    </div>
+
+    <div class="right" name="fset-main_focus" id="right" cache="1" x="1">
+        <div class="right_sub" name="fset-right" id="right_sub1" cache="1" y="0" default="0,1">
+            <div class="item" name="fnode-right_sub1" x="0" y="0"></div>
+            <div class="item" name="fnode-right_sub1" x="1" y="0" status="0"></div>
+            <div class="item" name="fnode-right_sub1" x="2" y="0"></div>
+            <div class="item" name="fnode-right_sub1" x="0" y="1"></div>
+            <div class="item" style="width: 542px;height: 244px;" name="fnode-right_sub1" x="1,2" y="1,2"></div>
+            <div class="item" style="margin-top: -126px;" name="fnode-right_sub1" x="0" y="2" status="0"></div>
+            <div class="item" name="fnode-right_sub1" x="0" y="3"></div>
+            <div class="item" name="fnode-right_sub1" x="1" y="3"></div>
+            <div class="item" name="fnode-right_sub1" x="2" y="3"></div>
+        </div>
+        <div class="right_sub" name="fset-right" id="right_sub2" cache="1" y="1">
+            <div class="item" name="fnode-right_sub2" x="0" y="0"></div>
+            <div class="item" name="fnode-right_sub2" x="1" y="0"></div>
+            <div class="item" name="fnode-right_sub2" x="2" y="0"></div>
+            <div class="item" name="fnode-right_sub2" x="0" y="1"></div>
+            <div class="item" name="fnode-right_sub2" x="1" y="1" status="0"></div>
+            <div class="item" name="fnode-right_sub2" x="2" y="1"></div>
+            <div class="item" name="fnode-right_sub2" x="0" y="2"></div>
+            <div class="item" name="fnode-right_sub2" x="1" y="2"></div>
+            <div class="item" name="fnode-right_sub2" x="2" y="2"></div>
+            <div class="item" name="fnode-right_sub2" x="0" y="3"></div>
+            <div class="item" name="fnode-right_sub2" x="1" y="3"></div>
+            <div class="item" name="fnode-right_sub2" x="2" y="3"></div>
+        </div>
+    </div>
+</div>
+<div class="focus">
+</div>
+<script src="../base/bjf.js"></script>
+<script src="../remoter/remoter.js"></script>
+<script src="../focus/focus.js"></script>
+<script src="../storage/storage.js"></script>
+<script src="../debug/debug.js"></script>
+<script>
+    bjf.openDebug();
+    bjf.repairIndexFocus();
+    var main_focus = new FocusNode({id:'main_focus'});
+    bjf.focus.build(bjf.$('.main'), main_focus);
+    bjf.focus.eventDefault.on = function () {
+        bjf.addClass(this.data.ele, 'on');
+    };
+    bjf.focus.eventDefault.lost = function () {
+        bjf.delClass(this.data.ele, 'on');
+    };
+    bjf.focus.eventDefault.ok = function () {
+        var focusDivName = this.data.ele.getAttribute('name');
+        var focusDivY = this.data.ele.getAttribute('y');
+        if ('fnode-left' == focusDivName && '1' == focusDivY) {
+            bjf.focus.locked = 1;
+            bjf.debug('已开启光标锁定');
+        } else {
+            var region = bjf.focus.getHistory();
+            bjf.storage.pageSet('region', region);
+            window.location.href = "demo.html";
+        }
+    };
+    bjf.focus.addEventListener('left', {
+        'child_on' : function () {
+            this.data.ele.classList.add('ron');
+        },
+        'child_lost' : function() {
+            this.data.ele.classList.remove('ron');
+        },
+        'enter' : function () {
+        }
+    });
+    bjf.focus.addEventListener('right_sub1', {
+        'top' : function () {
+            bjf.debug('child1_top');
+        },
+        'bottom' : function() {
+            bjf.$('#right').style.webkitTransitionDuration = '500ms';
+            bjf.$('#right').style.webkitTransform = 'translate3d(0px,-700px,0px)';
+            bjf.storage.pageSet('rightSubPage', 2);
+        },
+    });
+
+    bjf.focus.addEventListener('right_sub2', {
+        'top' : function () {
+            bjf.$('#right').style.webkitTransitionDuration = '500ms';
+            bjf.$('#right').style.webkitTransform = 'translate3d(0px,0px,0px)';
+        },
+        'bottom' : function() {
+            bjf.debug('child2_bottom');
+        },
+    });
+
+    var region = bjf.storage.pageGet('region')||null;
+    if (null != region && region.length > 1) {
+        var regionArr = region.split(':');
+        var rightSubArr = regionArr[1].split('-');
+        if('1' == rightSubArr[1]){
+            bjf.$('#right').style.webkitTransform = 'translate3d(0px,-700px,0px)';
+        }
+        bjf.focus.initByhistory(main_focus, region);
+        bjf.storage.pageClear();
+    } else {
+        bjf.focus.init(main_focus.getPosterity(1, 0));
+    }
+</script>
+</body>
+</html>

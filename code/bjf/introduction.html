@@ -1,0 +1,88 @@
+<!--
+ * @Author: liu.jiadong liu.jiadong@bestv.com.cn
+ * @Date: 2023-07-19 11:32:12
+ * @LastEditors: liu.jiadong liu.jiadong@bestv.com.cn
+ * @LastEditTime: 2023-07-26 09:32:02
+ * @FilePath: /bjf_pack/code/bjf/introduction.html
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BJF 框架介绍</title>
+    <link rel="stylesheet" href="xdoc/highlight/styles/monokai-sublime.css">
+    <style>
+        p {
+            font-size: 14px;
+            color: #333;
+            line-height: 20px;
+            padding-left: 50px;
+            margin: 6px 0px;
+        }
+        b {
+            color: #000;
+        }
+        h2,h3 {
+            margin: 16px 0 0 10px;
+        }
+        pre {
+            margin-left: 50px;
+        }
+    </style>
+</head>
+<body>
+    <h2>欢迎使用BJF框架</h2>
+    <div>
+        <h3>简介</h3>
+        <p>BJF框架是一款TV前端框架，框架封装了TVweb前端开发中最常用的部分，例如光标处理，播放器封装，以及遥控器按键识别等。</p>
+        <p>框架解决了各型号机顶盒之间的兼容性差异，支持所有型号的高清机顶盒，并根据机顶盒对HTML5的支持度，自动选用高性能方法与接口，以及在低端盒子上的自动降级。</p>
+        <p>框架按模块封装成不同的子对象，各个对象之间不依赖或轻度依赖，页面可根据自身情况选择不同模块。框架整体结构清晰，代码量少，压缩后仅仅58k大小。占用资源少，方便集成。</p>
+        <p>框架整体采用utf-8编码，但是在项目整体无中文内容输出，理论上对页面编码无要求。</p>
+        <p>框架提供的所有子模块和方法，命名空间都以"bjf"开头，对页面命名空间不做干预。</p>
+    </div>
+    <div>
+        <h3>下载</h3>
+        <p>请去项目管理平台上根据目标git分支构建相应的工程，生成bjf.js文件</p>
+        <!-- <p>请至官网下载<a target="_parent" href="index.html">最新</a>版本</p>
+        <p>或前往<a target="_blank" href="/vistools/bjf_build/history.php">历史版本</a>页面，下载指定版本号的历史版本。</p> -->
+    </div>
+    <div>
+        <h3>版本说明</h3>
+        <p>BJF框架每次发布，会产生3种不同格式的版本，分别是：基础版、基础压缩版和全量版</p>
+        <p><b>基础版：</b>根据依赖关系，把各个模块(除了plyerUI)代码集合并生成的完整框架代码，是一个带版本号的js文件。</p>
+        <p><b>基础压缩版：</b>将基础版的代码进行压缩，得到压缩版。压缩版代码不可读，但是体积小性能高。</p>
+        <p><b>全量版：</b>包含plyerUI模块的版本，因为plyerUI自带一套播控皮肤，所以该版本下载的是一个zip包，包内包含image文件夹以及全量版的js文件和压缩过的全量版js，一般页面不需要播控，所以无需下载全量版。</p>
+    </div>
+    <div>
+        <h3>引入</h3>
+        <p>在页面中引入BJF框架，需把框架js文件放在body的最底部引入，具体示例如下：</p>
+            <pre>
+                <code class="html">
+&lt;!DOCTYPE html>
+&lt;html lang="en">
+&lt;head>
+    &lt;meta charset="UTF-8">
+    &lt;title>Document&lt;/title>
+&lt;/head>
+&lt;body>
+    ...
+    &lt;!-- 因框架需要对页面性能和环境做检测，因此需要将框架js引入放在body的底部 -->
+    &lt;script src="bjf.1.0.3.min.js">&lt;script>
+&lt;/body>
+&lt;/html>
+                </code>
+            </pre>
+    </div>
+    <div>
+        <h3>注意事项</h3>
+        <p>页面z-index层级约定，页面应该使用小于10000的z-index层级。大于10000的由框架的debug，光标等模块使用</p>
+        <p>使用BJF框架后，BJF将会监听页面的window.onload方法，因此页面不能私自覆盖onload的监听。如果需要监听页面加载完成，可采用bjf.onload(call_back_func)的方式。详见<a href="remoter/document.html">Remoter模块</a>介绍</p>
+        <p>使用BJF框架后，BJF将会监听document.onkeydown，因此页面不能私自覆盖onkeydown的监听。如果需要监听按键事件，可使用Remoter模块的方法。详见<a href="remoter/document.html">Remoter模块</a>介绍</p>
+    </div>
+    <script src="xdoc/highlight/highlight.pack.js"></script>
+    <script>
+        hljs.initHighlightingOnLoad();
+    </script>
+</body>
+</html>

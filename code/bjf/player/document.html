@@ -1,0 +1,1776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>bjf player模块</title>
+    <link rel="stylesheet" href="../xdoc/demo.css">
+    <link rel="stylesheet" href="../xdoc/highlight/styles/monokai-sublime.css">
+</head>
+<body>
+ <div class="h1">bjf player模块</div>
+    <div class="desc">该模块主要提视频播控功能，UI自适应。
+        <br />可支持多个视频的播控，可以实现一个页面上有多个视频窗口，或者大小视频窗口的业务，需要注意机顶盒是否能支撑多个视频流播放；
+        <br />UI自适应：进程条，字体等会按窗口比例缩放；
+        <br />切换焦点窗口，可对焦点窗口进行播放控制；
+        <br />该模块(将)兼容所有<strong>高清</strong>IPTV机顶盒，OTT暂未测。
+        <br />一个完整的播控模块一般包括：player.js、playerUI.js、自定义页面。
+        <!--
+        <br />具体使用效果可参考<a target="_blank" href="demo.html">示例页面</a>
+        <br />-->
+        <br />
+        <br />该模块的主要功能有：
+        <br>倍速快进退：按“快进”、“快退”键，视频会按2/4/8/16/32倍速快进退；
+        <br>拖放快进退：按一次“左右”方向键，每按键一次视频快进退30秒；
+        <br>暂停：按“暂停”键视频暂停，再次按“暂停”键或者“返回”键，视频继续播放；
+        <br><strong>暂停时，按左右键可以拖放快进退；</strong>
+        <br>一键到头：按“上页”键，视频到头从头播放；
+        <br>一键到尾：按“下页”键，视频到尾结束，调用页面自定义的结束画面。
+        <br>返回：正播情况下按“返回”键，视频暂停，调用页面自定义的返回画面；再次按下“返回”键，继续播放，隐藏页面自定义的返回画面。
+        <br>结束：提供接口反馈。
+        <br>
+        <br>该模块在IPTV机顶盒和OTT机顶盒上的差异：
+        <br>OTT：
+        <br>无静音控制；
+        <br>无音量控制；
+        <br>无声道控制；
+        <br>不能禁止本地UI；
+        <br>以上控制按键发送后，该模块不会有响应。
+        <br>快进退只支持拖放模式；
+        <br>IPTV：
+        <br>快进退可选择支持拖放和倍速模式；
+        <br>
+        <br>demo(华为C70平台运行):
+        <br><a href="demo.html">demo.html</a>
+        <br>
+        <br>与v1.0版本的主要区别：
+        <br>
+        <table border="0" cellspacing="0" cellpadding="0" class="table">
+  <tr>
+    <td>屏幕大小变化UI自适应：</td>
+    <td>进程条，字体等会按窗口比例缩放</td>
+  </tr>
+  <tr>
+    <td>多屏UI独立</td>
+    <td>视频窗口拥有独立的一组UI</td>
+  </tr>
+  <tr>
+    <td>多屏播控独立：</td>
+    <td>可支持多屏播放，切换焦点窗口，可进行焦点窗口播控操作</td>
+  </tr>
+  <tr>
+    <td>键值监听：</td>
+    <td>页面自定义键值监听，发送给bjf player需要响应的键值</td>
+  </tr>
+  <tr>
+    <td>提供功能插件：</td>
+    <td>针对音量渐强、日志，提供插件案例</td>
+  </tr>
+</table>
+	
+
+    </div>
+    
+    <div class="title"><a id="list"></a>方法和对象列表：</div>
+    <div>
+       <ul>
+            <li>通用接口：</li>
+            <li><a href="#video">bjf.player.video</a> *</li>
+            <li><a href="#getFocusVideo">bjf.player.getFocusVideo</a></li>
+            <li><a href="#clearVirtualEvent">bjf.player.clearVirtualEvent</a> (华为V6)</li>
+            <li><a href="#onBesTVEvent">bjf.player.onBesTVEvent</a> (OTT)</li>
+            <li><a href="#onKey">bjf.player.onKey</a> *</li>
+            
+            <li>视频对象接口：</li>
+            <li><a href="#getInstanceID">*.getInstanceID</a></li>
+            <li><a href="#getName">*.getName</a></li>
+            <li><a href="#setDisplayArea">*.setDisplayArea</a> *</li>
+            <li><a href="#setPageViewSize">*.setPageViewSize</a> *</li>            
+            <li><a href="#setTvodStartTime">*.setTvodStartTime</a> *</li>
+            <li><a href="#setPlayTime">*.setPlayTime</a> *</li>         
+         	<li><a href="#setPlayUrl">*.setPlayUrl</a> *</li>
+            <li><a href="#setTrickMode">*.setTrickMode</a></li>
+            <li><a href="#getTrickMode">*.getTrickMode</a></li>
+            <li><a href="#setHttpTime">*.setHttpTime</a></li>
+            <li><a href="#setInitVol">*.setInitVol</a></li>
+            <li><a href="#setMosaicVoice">*.setMosaicVoice</a></li>
+         	<li><a href="#start">*.start</a></li>
+            <li><a href="#forcePlayerToBegin">*.forcePlayerToBegin</a></li>
+            <li><a href="#videoShow">*.videoShow</a> *</li>
+            <li><a href="#videoHide">*.videoHide</a> *</li>
+            <li><a href="#release">*.release</a></li>
+            <li><a href="#setFocusVideo">*.setFocusVideo</a> *</li>            
+            <li><a href="#setVol">*.setVol</a></li>
+            <li><a href="#getVol">*.getVol</a></li>
+        	<li><a href="#setMute">*.setMute</a></li>
+            <li><a href="#setMute">*.getMute</a></li>
+            <li><a href="#getPlayStatus">*.getPlayStatus</a></li>
+            <li><a href="#getPlayType">*.getPlayType</a></li>
+            <li><a href="#resume">*.resume</a></li> 
+            <li><a href="#playByTime">*.playByTime</a></li>
+            <li><a href="#gotoTime">*.gotoTime</a></li>
+            <li><a href="#rePlay">*.rePlay</a></li>
+            <li><a href="#getCurTime">*.getCurTime</a></li>
+            <li><a href="#speedInfoShow">*.speedInfoShow</a></li>
+            <li><a href="#speedInfoHide">*.speedInfoHide</a></li>
+            <li><a href="#hideUI">*.hideUI</a></li>                       
+         	<li><a href="#setUITitle">*.setUITitle</a> *</li>
+            <li><a href="#setUIRate">*.setUIRate</a> *</li>
+            <li><a href="#setUICastRoles">*.setUICastRoles</a></li>
+            <li><a href="#setUIImagePath">*.setUIImagePath</a></li>
+            <li><a href="#setUIErrorShow">*.setUIErrorShow</a></li>            
+            <li><a href="#setUILoadShow">*.setUILoadShow</a></li>
+            <li><a href="#setUITipPath">*.setUITipPath</a></li>
+            <li><a href="#setUISpeedTxtShow">*.setUISpeedTxtShow</a></li>
+            <li><a href="#setUISpeedBarShow">*.setUISpeedBarShow</a></li>
+            <li><a href="#setUIAllShow">*.setUIAllShow</a></li>
+            <li><a href="#setUIShow">*.setUIShow</a></li>
+            <li><a href="#setUIVolShow">*.setUIVolShow</a></li>
+            <li><a href="#setUIVolStyle">*.setUIVolStyle</a></li>
+            <li><a href="#setUITSShow">*.setUITSShow</a></li>
+            <li><a href="#setUITvodShow">*.setUITvodShow</a></li>
+            <li><a href="#getDurTime">*.getDurTime</a></li>
+            <li><a href="#fast">*.fast</a></li>
+            <li><a href="#pause">*.pause</a></li>
+            <li><a href="#stopPlay">*.stopPlay</a></li>    
+           
+         <li>自定义接口：</li>
+         	<li><a href="#playmode">player.custom.playmode</a> *</li>
+            <li><a href="#virtual">bjf.player.custom.virtual</a> *</li>
+            <li><a href="#debugVirtual">bjf.player.custom.debugVirtual</a> *</li>
+            
+            <li>附加功能点：</li>
+            <li><a href="#remoter">bjf.player.remoter.js</a></li>
+            <li><a href="#visLog">bjf.player.visLog.js</a></li>
+            <li><a href="#volFadeIn">bjf.player.volFadeIn.js</a></li>
+            <!-- <li><a href="#option">bjf.player.option.js</a></li> -->
+        </ul>
+    </div>
+    <div class="title">方法和对象说明：</div>
+    <div class="title">通用接口：</div>
+    
+    <div class="doc">
+    	<div class="name"><a id="getFocusVideo"></a>bjf.player.getFocusVideo</div>
+        <div class="content">获取焦点视频窗口的名字；
+        <br />
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+……
+var theFocusVideoName = bjf.player.getFocusVideo();
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="video"></a>bjf.player.video(name,id,type)</div>
+        <div class="content">用于建立视频对象；
+        <br />传参：
+        <br />name是新建窗口的命名，如果同名视频已经建立了，则不会响应；
+        <br />id是STB本地播放器实例的instanceID，如果这个id的播放器实例已经存在，则新建的视频对象会绑定这个id的STB本地媒体播放实例，适用于多个页面切换，不关闭窗口，只是切流的情况；
+        <br />针对华为V6平台，如果是建立PIP流的视频，则type传参"PIP"，如果是马赛克流，则type传参"mosaic"，普通的流则不需要传参type；
+        <br /><img src="imagesDocument/mediaPlayFlow.png" />
+        <br>MediaPlayer对象是对于终端播放直播、点播、即时时移、回看、音乐等这些媒体内容的能力进行的封装，并将其播放的基本行为抽象为MediaPlayer的相关方法以实现播放，快进，跳转，暂停，停止等操作。
+		<br>STB应该能够支持同时创建至少2个MediaPlayer对象。
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="clearVirtualEvent"></a>bjf.player.clearVirtualEvent</div>
+        <div class="content">在开始新视频前调用，可以清除虚拟事件。仅适用于华为Q22机顶盒，别的机顶盒不要用。
+        <br />在V6平台测试，发现在视频开始前，有以前视频的虚拟事件残留，导致混乱，才添加了该接口，但生产环境未发现该现象：
+        <br />
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.player.clearVirtualEvent();
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="onBesTVEvent"></a>bjf.player.onBesTVEvent</div>
+        <div class="content">该接口用于OTT盒子的视频响应。
+        <br />
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+function onBesTVEvent(result) {
+	bjf.player.onBesTVEvent(result);
+}
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="onKey"></a>bjf.player.onKey</div>
+        <div class="content">用于页面的键值响应。
+        <br />响应键值：左，右，快进，快退，确认，上页，下页，暂停，静音，音量+，音量-，声道，返回
+        <br />由于有的页面业务复杂，同一键值多重监听，优先级不容易区分，所以把键值监听从框架中剥离出来，交由页面控制，框架提供bjf.player.onKey()接口来响应键值。
+        <br />推荐下面这种写法，绝大部分机顶盒都可兼容。
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.remoter.onKeyFf(function(e){
+	bjf.player.onKey('FF', e);
+});
+	
+bjf.remoter.onKeyFr(function(e){
+	bjf.player.onKey('FR', e);
+});
+                
+bjf.remoter.onKeyRight(function(e){
+	bjf.player.onKey('Right', e);
+});
+    
+bjf.remoter.onKeyLeft(function(e){
+	bjf.player.onKey('Left', e);
+});
+
+bjf.remoter.onKeyOk(function(e){
+	bjf.player.onKey('Ok', e);
+});
+
+bjf.remoter.onKeyPrev(function(e){
+	bjf.player.onKey('Prev', e);
+});
+    
+bjf.remoter.onKeyNext(function(e){
+	bjf.player.onKey('Next', e);
+});
+
+bjf.remoter.onKeyPause(function(e){
+	bjf.player.onKey('Pause', e);
+});
+
+bjf.remoter.onKeyMute(function(e){
+	bjf.player.onKey('Mute', e);
+});
+
+bjf.remoter.onKeyVolUp(function(e){
+	bjf.player.onKey('VolUp', e);
+});
+
+bjf.remoter.onKeyVolDown(function(e){
+	bjf.player.onKey('VolDown', e);
+});
+
+bjf.remoter.onKeyBack(function(e){
+	bjf.player.onKey('Back', e);
+});
+
+bjf.remoter.onKeyAudio(function(e){
+	bjf.player.onKey('Audio', e);
+});
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="title">视频对象接口：</div>
+    
+    <div class="doc">
+    	<div class="name"><a id="getInstanceID"></a>*.getInstanceID</div>
+        <div class="content">获取STB本地播放器实例的instanceID。
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+……
+vod.start();
+var id = vod.getInstanceID();
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="getName"></a>*.getName</div>
+        <div class="content">获取video对象的名称。
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+……
+vod.start();
+var name = vod.getName();
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="setDisplayArea"></a>*.setDisplayArea</div>
+        <div class="content">设置视频显示位置和大小的属性。
+        <br />属性为 宽, 高, 上边距, 左边距，设置后并不会立即改变视频的显示，需要调用*.videoShow()才能改变视频的显示位置和大小，如果稍后会调用*.start()，则不需要调用*.videoShow()，*.start()会自动调用*.videoShow()。
+        <br />框架会比较page-view-size的尺寸，当宽度大于等于page-view-size的宽，或者高度大于等于page-view-size的高，则全屏播放；
+        <br />当宽度小于50，或者高度小于50时，宽度或者高度等于50。
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+……
+vod.start();
+……
+vod.setDisplayArea(600,400,0,0);//设置宽600px，高400px，上边距为0px，左边距为0px的视频
+vod.videoShow();
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="setPageViewSize"></a>*.setPageViewSize</div>
+        <div class="content">设置页面可见区域的位置和大小属性，目前主要控制音量图标的显示位置，如果视频窗为小窗时，设置*.setPageViewSize(1280,720,0,0)，可以以全屏的版式范围显示音量图标，而不是局限在视频窗口内。
+        <br />如不设置，默认为视频窗口大小。
+        <br />属性为 宽, 高, 上边距, 左边距，需要设置在*.start()之前。
+        <br />bjf会比较视频窗口的尺寸，页面可见区域的位置和大小不会小于或遮挡视频窗口；
+        <br />
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+……
+vod.setPageViewSize(600,400,0,0);//设置宽600px，高400px，上边距为0px，左边距为0px
+vod.start();
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="setTvodStartTime"></a>*.setTvodStartTime(t)</div>
+        <div class="content">设置回看节目的开始时间。
+        <br />如不设置，则当做VOD类型处理。
+        <br />传参t为时间戳，单位毫秒，距离当前时间10天以前的不处理。
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+……
+vod.setTvodStartTime(1527002250640);
+vod.start();
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="setPlayTime"></a>*.setPlayTime</div>
+        <div class="content">设置视频开始时跳转的播放时间。
+        <br />直播和点播设置时间都为秒，假设n秒,点播是从00:00:00开始的n秒开始播放，直播，假设具有时移功能的频道，为当前的时移开始时间的n秒开始播放。
+        <br />需要在*.start()前设置。
+        <br />相似功能也可以通过player.custom.playmode()与*.playByTime()的组合来实现。
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var time = 100;
+var beginFlag = 0;
+                
+var vod = new bjf.player.video("vod");
+vod.setPlayTime(10);//10秒
+……
+vod.start();
+……
+bjf.player.custom.playmode = function(N,playmode){
+	if( N === "vod" ){
+    	switch( playmode ){
+		case "begin":
+			beginFlag = 1;
+			if( time > 3 ){
+				vod.playByTime(time);		
+			}
+	
+			//播放开始日志
+			break;
+            }
+	}
+}
+                </code>
+            </pre>
+        </div>
+        <div class="demo">
+        	<video src="imagesDocument/vedioBegin.mp4" width="800" controls>
+            您的浏览器不支持 video 标签。
+            </video>        
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="setPlayUrl"></a>*.setPlayUrl(playUrl,type,mediaCode)</div>
+        <div class="content">设置视播放地址。
+        <br />播放单片，参playUrl数为视频播放地址。
+        <br />播放频道，参数playUrl为整数频道号；华为V6平台，参数playUrl为"mediaId://"+整数频道号；
+        <br />参数type，需要传参"VOD"|"TVOD"|"CHANNEL"，如需设置回看的节目时间，必传"TVOD"，如果播放频道单播地址，必传"CHANNEL"；
+        <br />非V6平台可以不传，参数mediaCode，需要传mediaCode
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+……
+var mediaUrl = "rtsp://10.61.14.194:554/vod/00000050280000001218.mpg?userid=xyz&stbip=10.61.2.30&clienttype=1&mediaid=0000000030010000001337&ifcharge=1&time=20161117164305+08&life=172800&usersessionid=5644&vcdnid=001&boid=001&srcboid=001&columnid=09040000&backupagent=10.61.14.194:554&ctype=1&playtype=0&Drm=0&EpgId=epg_nj_003&programid=00000050280000001218&contname=&fathercont=&bp=0&authid=&tscnt=0&tstm=0&tsflow=0&ifpricereqsnd=1&stbid=001002990070115000020089a224703c&nodelevel=3&terminalflag=1&bitrate=0&usercharge=62887727D207922D13E61DC35FB7BA72";
+vod.setPlayUrl(mediaUrl,"VOD","Umai:PROG/3018302@BESTV.SMG.SMG");//播放单片，mediaUrl为视频播放地址
+//vod.setPlayUrl(17,"CHANNEL","Umai:CHAN/334@BESTV.SMG.SMG");//播放频道，17为频道号
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="setTrickMode"></a>*.setTrickMode(str)</div>
+        <div class="content">设置视频是否开启TrickMode功能，如快退，快进，暂停，一键到头，一键到尾，返回。
+        <br />参数str的值是："on"|"off",默认开启。
+        <br />视频播放的任何时候调用都有效。
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+vod.setTrickMode("off");
+vod.start();
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="getTrickMode"></a>*.getTrickMode(str)</div>
+        <div class="content">获取当前视频是否开启TrickMode功能。
+        <br />返回值是："on"|"off"。
+        <br />视频播放的任何时候调用都有效。
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+vod.start();
+……
+var theVideoTrickMode = vod.getTrickMode();
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+     <div class="doc">
+    	<div class="name"><a id="setHttpTime"></a>*.setHttpTime(t1,t2,t3)</div>
+        <div class="content">设置视频在HTTP拖放模式下的两个拖放步长。
+        <br />t1是单次的步长，t2是连续快进退的步长，t3是两次快进退按键的间隔时间，如连续按键间隔小于t3，则认为连续按键。
+        <br />t1必须小于t2，默认t1=15,t2=30,t3=1000,t1,t2单位为秒,t3为毫秒，t3为1000ms，是经过多次测试的合理值，建议不要小于600ms。
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+vod.setHttpTime(15,30);
+vod.start();
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="setInitVol"></a>*.setInitVol(str)</div>
+        <div class="content">设置视频窗口初始的声音状态。
+        <br />传参是："on"|"off"。
+        <br />"on"：初始时有声状态；"off"：初始时静音状态；不设置，即默认，则框架不处理声音，由机顶盒的视频窗口原始状态决定。
+        <br />需要在*.start()前设置。
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+vod.setInitVol("on"); //初始有声状态
+vod.start();
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="setMosaicVoice"></a>*.setMosaicVoice(str)</div>
+        <div class="content">设置马赛克视频窗口的声音状态。
+        <br />传参是："on"|"off"。
+        <br />"on"：有声状态；"off"：无声状态；不设置，即默认无声。
+        <br />需要在*.start()前设置。
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+vod.setMosaicVoice("on"); //有声状态
+vod.start();
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="start"></a>*.start(time,str1,str2,ottext)</div>
+        <div class="content">设置视频开始播放。
+        <br />可选参数：time，vod时长/频道时移时间
+        <br />由于有极少数盒子通过mp接口取不到频道的时移时间、或者vod的时长，所以提供在start接口提供参数time，让后端取得时移时间、vod时长来赋值给框架，单位为秒;之后框架则调用这个传入的时移时间使用，框架不再请求时移时间。不需要设置时移时间时，传null；
+        <br />str1是字符串，如果是"noInit",则框架开始视频前，不会调用初始mp，这种情况比较适用于，同一个视频窗切换视频时，不希望它改变已有的视频设置时使用。
+        <br />str2是字符串，如果是"seek",则框架使用playByTime起流，如果不是，则使用fromStart从头起流后，playByTime跳转，使用前请确保机顶盒支持playByTime起流。
+        <br />ottext：OTT播放所需的额外参数，比如优酷等项目需要。格式为object，其下所有的key终将做为setPlayParams的参数送给OTT播放器
+        <br />ottext：示例：{Vid:'xxx', Fid:'xxx'}
+        <br />*.setDisplayArea
+        <br />*.setPlayTime
+        <br />*.setPlayUrl
+        <br />*.setTrickMode
+        <br />*.setUILoadShow
+        <br />等接口设置
+        <br />须在*.start之前设置才能生效。        
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+var time = 100;
+vod.setUIImagePath("bjf/images/skin_1920/");
+vod.setUILoadShow("on");
+vod.setUITitle("变形金刚"); //会显示在loading面板，以及上方的信息面板上
+vod.setUICastRoles("导演：迈克尔·贝；主演：霍普金斯、劳拉·哈德克、伊莎贝拉·莫奈、杰洛·卡迈克尔、乔什·杜哈明");  //会显示在上方的信息面板上
+vod.setUIErrorShow("off"); //关闭媒体错误提示
+if( time > 0 ) vod.setPlayTime(time); //设置开始跳转播放位置，单位秒
+vod.setDisplayArea(1280,720,0,0);
+vod.setPlayUrl(playUrl_,"VOD",mediaCode_); //播放地址    "VOD"|"TVOD"|"CHANNEL"   mediaCode
+vod.setFocusVideo(); //把vod设置为焦点视频，针对多个视频窗口的时候，焦点视频窗才会响应键值
+vod.start(3600); //3600秒时移时间
+
+//vod.start(null, "", "seek", {Vid:'xxx', Fid:'xxx'}); //带OTT参数播放
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+    	<div class="name"><a id="forcePlayerToBegin"></a>*.forcePlayerToBegin</div>
+        <div class="content">浙江EPG5.0烽火MR820、创维E8205、创维E900s播放频道起流时，不会发出任何768事件，所以框架无法辨识视频是否开始，添加vod.forcePlayerToBegin()接口，提供给业务根据需要调用强制开始。
+        <br />建议发出视频开始命令2秒之后再调用该接口。
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+……
+vod.start();
+setTimeout(function(){
+    vod.forcePlayerToBegin();
+},2000);
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+    	<div class="name"><a id="videoShow"></a>*.videoShow</div>
+        <div class="content">根据*.setDisplayArea设置属性调整视频窗口显示。
+        <br />每次调*.setDisplayArea设置窗口属性后，视频显示窗口并不会被立即重新刷新以反映更改后的显示效果，只有等到调用*.videoShow后才会刷新。
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+……
+vod.start();
+……
+vod.setDisplayArea(600,400,0,0);//设置宽600px，高400px，上边距为0px，左边距为0px的视频
+vod.videoShow();
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+    	<div class="name"><a id="videoHide"></a>*.videoHide</div>
+        <div class="content">在保持媒体流链接的前提下，暂停并隐藏视频窗口，不处理声音。
+        <br />适用于不需要将媒体流停止或释放的情况下，隐藏视频窗口。
+        <br />隐藏后，可用*.videoShow()将视频显示继续播放。
+        <br />如果是没有时移功能的频道，是无法暂停的，可能会导致视频窗被隐藏，声音仍在后面播放的现在，如果这种情况，建议使用*.release();
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+……
+vod.videoHide();
+                </code>
+            </pre>
+        </div>
+        <div class="demo">
+        	<video src="imagesDocument/videoHide.mp4" width="800" controls>
+            您的浏览器不支持 video 标签。
+            </video>        
+        </div>        
+    </div>
+    <div class="doc">
+    	<div class="name"><a id="release"></a>*.release</div>
+        <div class="content">释放终端MediaPlayer的对象，结束对应MediaPlayer的生命周期，同时自动删除窗口UI。
+        <br />
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+……
+vod.release();
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="setFocusVideo"></a>*.setFocusVideo</div>
+        <div class="content">设置焦点视频窗口，焦点视频窗才会响应键值。
+        <br />
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+……
+vod.setFocusVideo(); //把vod设置为焦点视频，针对多个视频窗口的时候，焦点视频窗才会响应键值
+vod.start();
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="setVol"></a>*.setVol(num)</div>
+        <div class="content">设置视频音量。
+        <br />参数num为0-100的整数值；
+        <br />一般视频开始播放后设置才有效；
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+……
+vod.start();
+……
+vod.setVol(88);
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="getVol"></a>*.getVol</div>
+        <div class="content">获取视频音量值。
+        <br />返回值为0-100的整数值；
+        <br />一般视频开始播放后获取才有效；
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+……
+vod.start();
+……
+vod.getVol();
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="setMute"></a>*.setMute(str)</div>
+        <div class="content">设置视频是否静音。
+        <br />传参str为"on"|"off"；
+        <br />"on"：设置静音；"off"：关闭静音，打开声音；
+        <br />如果音量为0，需要按"音量+"来打开声音；
+        <br />一般视频开始播放后设置才有效。
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+……
+vod.start();
+……
+vod.setMute("on"); //设为静音
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="setMute"></a>*.getMute()</div>
+        <div class="content">获取视频的静音状态。
+        <br />"on"：静音开启状态；"off"：静音关闭状态；"none":个别机顶盒在视频开始前会反馈电信标准以外的状态。
+        <br />一般视频开始播放后设置才有效
+        <br />框架设置视频开始，音量都为有声状态。
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+……
+var mute = vod.getMute();
+vod.start(); //框架设置视频开始，音量都为有声状态
+……
+bjf.player.custom.playmode = function(N,s){
+	if( mute === "on" && s === "begin" ) vod.setMute("on"); //如果需要继承静音则需要视频开始后设置静音。
+};
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="getPlayStatus"></a>*.getPlayStatus</div>
+        <div class="content">获取当前视频的播放状态。
+        <br />返回参数为："ORIGIN"|"FF"|"FR"|"PLAY"|"PAUSE"|"WAIT"|"END"；
+        <br />
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+……
+vod.start();
+……
+var theVideoPlayStatus = vod.getPlayStatus();
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="getPlayType"></a>*.getPlayType</div>
+        <div class="content">获取当前视频的播放类型。
+        <br />返回参数为："VOD"|"TS"|"LIVE"；
+        <br />
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+……
+vod.start();
+……
+var theVideoPlayType = vod.getPlayType();
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="resume">*.resume</a></div>
+        <div class="content">视频从暂停，快进退等状态复原正常播放状态，并隐藏所有播控UI，包括返回，结束等自定义页面，但不包括静音和时移图标。
+        <br />
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+……
+vod.start();
+……
+vod.resume();
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="playByTime">*.playByTime(t,str1,str2)</a></div>
+        <div class="content">视频时间跳转。
+        <br />片源为vod，跳转时，t为相对开始时间，单位为秒；
+        <br />片源为直播或者时移，跳转时，t为8时区时间戳，单位为毫秒；
+        <br />str1="enforcement"，为无视trickmode的设置，强制执行跳转；
+        <br />str2="Date"，用于片源为直播，且t的值是8时区时间戳，单位为毫秒；
+        <br />不传入str2，t为相对开始时间，单位为秒：片源为vod时，t为相对开始时间0的相对时间，片源为频道时，且该频道开启时移功能，设t1为当前时间向前回退频道时移时间的时间点，t为相对于t1的时间点；
+        <br />
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+……
+vod.start();
+……
+vod.playByTime(300); //5分钟
+vod.playByTime(1524208114000,"enforcement","Date");//频道且传入时间戳
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="gotoTime">*.gotoTime</a></div>
+        <div class="content">一键到头，一键到尾，参数："start"|"end"
+        <br />必须在流保持连接时，播放、快进、快退时响应，
+        <br />相当于bjf.player.onKey('Prev', e);bjf.player.onKey('Next', e);
+        <br />遥控器键值对应“上页”、“下页”。
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+……
+vod.start();
+……
+vod.gotoTime("end");
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="rePlay"></a>*.rePlay</div>
+        <div class="content">可以让视频媒体流在非结束或释放状态下，跳到媒体起始点播放。
+        <br />
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+……
+vod.start();
+……
+vod.rePlay();
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="getCurTime">*.getCurTime</a></div>
+        <div class="content">返回当前视频播放的时间。
+        <br />
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+……
+vod.start();
+……
+vod.getCurTime();
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="speedInfoShow">*.speedInfoShow(t)</a></div>
+        <div class="content">信息面板展示。
+        <br />参数t为秒，如果有t，进程条根据t显示，没有则获取视频当前时间显示进程条。
+        <br />可通过*.speedInfoHide()进行隐藏
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+……
+vod.start();
+……
+vod.speedInfoShow();
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="speedInfoHide">*.speedInfoHide()</a></div>
+        <div class="content">信息面板隐藏。
+        <br />
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+……
+vod.start();
+……
+vod.speedInfoShow();
+……
+vod.speedInfoHide();
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="hideUI">*.hideUI(str)</a></div>
+        <div class="content">隐藏所有播控UI，包括返回，结束等自定义页面，传参“keepMuteUI”表示保留静音UI。
+        <br />传参为"keepMuteUI",则会保持静音图标和时移图标的原本的显示状态。
+        <br />不传参"keepMuteUI"，则所有的UI都隐藏。
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+……
+vod.start();
+……
+vod.hideUI("keepMuteUI");
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="setUITitle">*.setUITitle(str, fontSize, colour)</a></div>
+        <div class="content">参数str：为视频名称，会显示在loading面板，以及进程条上方的信息面板上。
+            <br />参数fontSize：是字体的大小，可以调整进程条上方的标题文字大小。
+            <br />参数colour：是字体的颜色，可以调整进程条上方的标题文字颜色。
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+……
+vod.start();
+……
+vod.setUITitle("变形金刚");
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="setUIRate">*.setUIRate(str, fontSize, colour)</a></div>
+        <div class="content">参数str：为码率，会显示在进程条上方的信息面板上。
+            <br />一般主要的值是：SD|HD|BD|4K，会已一个圆角的半透明白色方块显示。
+            <br />参数fontSize：是字体的大小，可以调整进程条上方的码率文字大小。
+            <br />参数colour：是字体的颜色，可以调整进程条上方的码率文字颜色。
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+……
+vod.start();
+……
+vod.setUIRate("HD");
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="setUICastRoles">*.setUICastRoles(str, fontSize, colour)</a></div>
+        <div class="content">参数str：为视频演职人员等信息，会显示在上方的信息面板上。
+            <br />参数fontSize：是字体的大小，可以调整进程条上方的演职人员等信息文字大小。
+            <br />参数colour：是字体的颜色，可以调整进程条上方的演职人员等信息文字颜色。
+            <br />
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+……
+vod.start();
+……
+vod.setUICastRoles("导演：迈克尔·贝；主演：霍普金斯、劳拉·哈德克、伊莎贝拉·莫奈、杰洛·卡迈克尔、乔什·杜哈明");
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="setUIImagePath">*.setUIImagePath(str)</a></div>
+        <div class="content">设置模板图片路径。
+        <br />
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+vod.setUIImagePath("bjf/images/skin_1920/");
+……
+vod.start();
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="setUIErrorShow">*.setUIErrorShow(str)</a></div>
+        <div class="content">设置是否在视频画面上显示报错信息，默认不显示，传参"on"|"off"。
+        <br />
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+vod.setUIErrorShow("on"); //显示报错
+……
+vod.start();
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="setUILoadShow">*.setUILoadShow(str)</a></div>
+        <div class="content">设置是否在视频开始前的画面正中显示片名，默认显示，传参"on"|"off"。
+        <br />
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+vod.setUILoadShow("off"); //不显示片头提示
+……
+vod.start();
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="setUITipPath">*.setUITipPath(str)</a></div>
+        <div class="content">修改进程条提示图片的地址。
+        <br />
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+vod.setUITipPath("v6images/vodPlay/infoTip_noChapters.png");
+……
+vod.start();
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="setUISpeedTxtShow">*.setUISpeedTxtShow(str)</a></div>
+        <div class="content">设置暂停、快进退、信息展示的进程条面板中，是否显示标题演职人员信息条，默认显示，传参"on"|"off"。
+        <br />
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+vod.setUISpeedTxtShow("off"); //不显示
+……
+vod.start();
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="setUISpeedBarShow">*.setUISpeedBarShow(str)</a></div>
+        <div class="content">在vod.setTrickMode("on")的情况下，设置暂停、快进退、信息展示的进程条面板中，是否显示进程条，默认显示，传参"on"|"off"。
+        <br />
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+vod.setUISpeedBarShow("off"); //不显示
+……
+vod.start();
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="setUIAllShow">*.setUIAllShow(str)</a></div>
+        <div class="content">禁止显示所有的UI，包括loading、进程条、标题、音量等，传参"on"|"off"。
+        <br />
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+vod.setUIAllShow("off"); //不显示
+……
+vod.start();
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="setUIShow">*.setUIShow(str)</a></div>
+        <div class="content">禁止显示除了声音相关的所有的UI，包括loading、进程条、标题等，传参"on"|"off"。
+        <br />
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+vod.setUIShow("off"); //不显示
+……
+vod.start();
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="setUIVolShow">*.setUIVolShow(str)</a></div>
+        <div class="content">禁止显示声音相关的所有的UI，包括音量、静音、声道等，传参"on"|"off"。
+        <br />
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+vod.setUIVolShow("off"); //不显示
+……
+vod.start();
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="setUIVolStyle">*.setUIVolStyle(str)</a></div>
+        <div class="content">设置音量显示的样式，默认圆形样式，可选长条形的样式，传参"round"|"line"。
+        <br />
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+vod.setUIVolStyle("line");
+……
+vod.start();
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="setUITSShow">*.setUITSShow(str)</a></div>
+        <div class="content">禁止显示时移图标，传参"on"|"off"。
+        <br />
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+vod.setUITSShow("off"); //不显示
+……
+vod.start();
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="setUITvodShow">*.setUITvodShow(str)</a></div>
+        <div class="content">禁止显示回看图标，传参"on"|"off"。
+        <br />
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+vod.setUITvodShow("off"); //不显示
+……
+vod.start();
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="getDurTime">*.getDurTime()</a></div>
+        <div class="content">视频开始后，获取视频的时长，单位：秒。
+        <br />如果是频道，返回的是时移时长。
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+……
+vod.start();
+……
+var time = vod.getDurTime();
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="fast">*.fast()</a></div>
+        <div class="content">倍速快进退接口，可传参数速率：2,4,8,16,32,或者，-2,-4,-8,-16,-32。
+        <br />可以指定速率。
+        <br />必须在流保持连接时，播放、快进、快退时响应，
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+……
+vod.start();
+……
+vod.fast(2);
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="pause">*.pause(str)</a></div>
+        <div class="content">暂停接口。
+        <br />可用*.resume()取消暂停。
+        <br />等同于 bjf.player.onKey('Pause', e)。
+        <br />必须在流保持连接时，播放时响应，
+        <br />str1="enforcement"，为无视trickmode的设置，强制执行暂停；
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+……
+vod.start();
+……
+vod.pause("enforcement");
+                </code>
+            </pre>
+        </div>
+    </div>
+            
+    <div class="doc">
+    	<div class="name"><a id="stopPlay">*.stopPlay()</a></div>
+        <div class="content">停止接口。
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+……
+vod.start();
+……
+vod.stopPlay();
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <!--    
+    <div class="doc">
+    	<div class="name"><a id=""></a></div>
+        <div class="content">
+        <br />
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+                </code>
+            </pre>
+        </div>
+    </div>
+    --> 
+    
+    <div class="title">自定义接口：</div>
+    <!--
+    <div class="doc">
+    	<div class="name"><a id="begin"></a>bjf.player.custom.begin(N)</div>
+        <div class="content">媒体播放开始时触发bjf.player.custom.begin。
+        <br />可自定义媒体开始时需要触发的动作。
+        <br />如没有需要可不定义。
+        <br />传参N为触发begin的video名称。
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.player.custom.begin = function(N){
+	//自定义代码
+}
+                </code>
+            </pre>
+        </div>
+    </div>
+    -->
+    <div class="doc">
+    	<div class="name"><a id="virtual"></a>bjf.player.custom.virtual(N,s,e)</div>
+        <div class="content">媒体播放虚拟事件报"EVENT_MEDIA_ERROR"|"EVENT_MEDIA_RESTORE"时，触发bjf.player.custom.virtual。
+        <br />可自定媒体播放虚拟事件需要触发的动作。
+        <br />如没有需要可不定义。
+        <br />传参N为触发error的video名称，e为虚拟事件的详情信息，s为类型，枚举类型为"error"|"restore"。
+        <br />Q22："restore"，即机顶盒报错误修复。
+		<br />
+        <br />768虚拟事件：
+        <br />{"type":"EVENT_STB_RESTORE","error_code":"10086","media_code":"jsoncode1","instance_id":2} 
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.player.custom.virtual = function(N,s,e){
+	//自定义代码
+}
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="debugVirtual"></a>bjf.player.custom.debugVirtual(N,s)</div>
+        <div class="content">发送所有的媒体播放虚拟事件报，主要用于调试。
+        <br />该接口主要用于视频发生不明原因时，打印768虚拟事件的，会把所有的虚拟事件都送过来，包括多个视频窗的。
+        <br />传参N为触发虚拟事件的video名称，s为字符串。
+		<br />
+        <br />768虚拟事件：
+        <br />{"type":"EVENT_STB_RESTORE","error_code":"10086","media_code":"jsoncode1","instance_id":2} 
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.player.custom.debugVirtual = function(N,s){
+	//自定义代码
+}
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="playmode"></a>bjf.player.custom.playmode(N,str)</div>
+        <div class="content">媒体播放时playmode改变时，触发bjf.player.custom.playmode，传递状态str，str的枚举值为"begin"|"end"|"fastForward"|"fastRewind"|"pause"|"back"|"gotoLive"。
+        <br />可根据str的值自定义对应的。
+        <br />"gotoLive":通过快进、跳转进入直播状态
+        <br />
+        <br />768虚拟事件：
+        <br />{"type":"EVENT_PLAYMODE_CHANGE","instance_id":2,"new_play_mode":2,"new_play_rate":1,"old_play_mode":0,"old_play_rate":0}
+        <br />{"type":"EVENT_PLAYMODE_CHANGE","instance_id":2,"new_play_mode":2,"new_play_rate":1,"old_play_mode":2,"old_play_rate":1} 
+        <br />
+        <br />begin的判断：
+        <br /><table border="0" cellspacing="0" cellpadding="0" class="table">
+  <tr>
+    <td>before</td>
+    <td>now</td>
+  </tr>
+  <tr>
+    <td>(parseInt(e.new_play_mode, 10) === 2 && parseInt(e.new_play_rate, 10) === 1 && parseInt(e.old_play_mode, 10) === 6 && parseInt(e.old_play_rate, 10) === 0) || (parseInt(e.new_play_mode, 10) === 2 && parseInt(e.new_play_rate, 10) === 1 && parseInt(e.old_play_mode, 10) === 0 && parseInt(e.old_play_rate, 10) === 0) || (parseInt(e.new_play_mode, 10) === 2 && parseInt(e.new_play_rate, 10) === 1 && parseInt(e.old_play_mode, 10) === -1 && parseInt(e.old_play_rate, 10) === -1) || (parseInt(e.new_play_mode, 10) === 2 && parseInt(e.new_play_rate, 10) === 1 && parseInt(e.old_play_mode, 10) === 0 && parseInt(e.old_play_rate, 10) === -1) || (parseInt(e.new_play_mode, 10) === 2 && parseInt(e.new_play_rate, 10) === 1 && parseInt(e.old_play_mode, 10) === 0 && parseInt(e.old_play_rate, 10) === 1) ||(parseInt(e.new_play_mode,10) === 2 && parseInt(e.new_play_rate,10) === 1 && parseInt(e.old_play_mode,10) === 20 && parseInt(e.old_play_rate,10) === 0)</td>
+    <td>parseInt(e.new_play_mode, 10) === 2 && parseInt(e.new_play_rate, 10) === 1 && _player.media[N].behavior.base.beginFlag === 0</td>
+  </tr>
+</table>
+
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.player.custom.playmode = function(N,str){
+	//自定义代码
+}
+                </code>
+            </pre>
+        </div>
+        
+        <div class="demo">
+        故障案例：
+        <br>
+        <img src="imagesDocument/beginError.jpg" />      
+        </div>
+    </div>
+    
+    
+    <!--
+    <div class="doc">
+    	<div class="name"><a id="backShow"></a>bjf.player.custom.backShow(e,N)</div>
+        <div class="content">媒体播放时按"返回"键时，触发bjf.player.custom.backShow。
+        <br />可自定义返回界面,同时传参触发的onKeyBack遥控器事件e，如果页面同时有监听onKeyBack事件，可根据业务需求，考虑是否需要阻止事件冒泡和默认事件，即在bjf.player.custom.backShow中定义：e.safePreventDefault()、e.safeStopPropagation()。
+        <br />如没有需要可不定义。
+        <br />传参N为触发backShow的video名称，e为back键值。
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.player.custom.backShow = function(e,N){
+	//自定义代码
+}
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+    	<div class="name"><a id="backHide"></a>bjf.player.custom.backHide(N)</div>
+        <div class="content">隐藏返回界面时，触发bjf.player.custom.backHide。
+        <br />根据bjf.player.custom.backShow自定义隐藏返回界面。
+        <br />如没有需要可不定义。
+        <br />传参N为触发backHide的video名称。
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.player.custom.backShow = function(N){
+	//自定义代码
+}
+                </code>
+            </pre>
+        </div>
+    </div>
+	<div class="doc">
+    	<div class="name"><a id="endShow"></a>bjf.player.custom.endShow(N)</div>
+        <div class="content">当媒体播放到末端时，或者一键到尾时，或者快退头尾时触发bjf.player.custom.endShow。
+        <br />可自定感谢界面。
+        <br />如没有需要可不定义。
+        <br />传参N为触发endShow的video名称。
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.player.custom.endShow = function(N){
+	//自定义代码
+}
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="endHide"></a>bjf.player.custom.endHide(N)</div>
+        <div class="content">隐藏感谢界面时，触发bjf.player.custom.endHide。
+        <br />根据bjf.player.custom.endShow自定义隐藏感谢界面。
+        <br />如没有需要可不定义。
+        <br />传参N为触发endHide的video名称
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.player.custom.endHide = function(N){
+	//自定义代码
+}
+                </code>
+            </pre>
+        </div>
+    </div>
+
+    <div class="doc">
+    	<div class="name"><a id="restore"></a>bjf.player.custom.restore(e,N)</div>
+        <div class="content">媒体播放虚拟事件报"EVENT_MEDIA_RESTORE"时，即机顶盒报错误修复，触发bjf.player.custom.restore。
+        <br />可自定媒体播放虚拟事件报"EVENT_MEDIA_RESTORE"时需要触发的动作。
+        <br />如没有需要可不定义。
+        <br />传参N为触发error的video名称，e为虚拟事件的详情信息
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.player.custom.restore(e,N) = function(N){
+	//自定义代码
+}
+                </code>
+            </pre>
+        </div>
+    </div>
+    -->
+    <!-- 附加功能点 -->
+    
+     
+    <div class="doc">
+    	<div class="name"><a id="remoter"></a>bjf.player.remoter.js</div>
+        <div class="content">player模块中除了监听768键值，其余键值不再监听，交由页面端统一控制。
+        <br />页面可以自主决定视频是否响应键值。
+        <br /><a href="bjf.player.remoter.js">获取bjf.player.remoter.js文件</a>
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.remoter.onKeyFf(function(e){
+	bjf.player.onKey('FF', e);
+});
+	
+bjf.remoter.onKeyFr(function(e){
+	bjf.player.onKey('FR', e);
+});
+                
+bjf.remoter.onKeyRight(function(e){
+	bjf.player.onKey('Right', e);
+});
+    
+bjf.remoter.onKeyLeft(function(e){
+	bjf.player.onKey('Left', e);
+});
+
+bjf.remoter.onKeyOk(function(e){
+	bjf.player.onKey('Ok', e);
+});
+
+bjf.remoter.onKeyPrev(function(e){
+	bjf.player.onKey('Prev', e);
+});
+    
+bjf.remoter.onKeyNext(function(e){
+	bjf.player.onKey('Next', e);
+});
+
+bjf.remoter.onKeyPause(function(e){
+	bjf.player.onKey('Pause', e);
+});
+
+bjf.remoter.onKeyMute(function(e){
+	bjf.player.onKey('Mute', e);
+});
+
+bjf.remoter.onKeyVolUp(function(e){
+	bjf.player.onKey('VolUp', e);
+});
+
+bjf.remoter.onKeyVolDown(function(e){
+	bjf.player.onKey('VolDown', e);
+});
+
+bjf.remoter.onKeyBack(function(e){
+	bjf.player.onKey('Back', e);
+});
+
+bjf.remoter.onKeyAudio(function(e){
+	bjf.player.onKey('Audio', e);
+});
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="visLog"></a>bjf.player.visLog.js</div>
+        <div class="content">在页面中引入该文件，即可在视频开始、结束时以触发img的src方式发送visLog日志。
+        <br />当视频开始的时候，会发送playstart的日志。
+        <br />当视频播放到尾的时候，会发送playend的日志。
+        <br />
+        <br />里面有4个函数，页面端需要进行调用：
+        <br />visLog.setUrl(url);
+        <br />用于设置vis日志服务器url
+        <br />设置Vis日志服务器的url，会同时在visLog和localStorage里面都存储一次，但由于localStorage不支持跨域，所以存在取不到的风险，如果在visLog和localStorage都没有取到这个值的话，就不会发送日志。
+        <br />所以，每次在需要发送日志的页面都Vis日志服务器的url是最为保险的做法，而只在开机页面存储一次，存在跨域取不到的情况。
+        <br />	
+		<br />visLog.setParaFixed(obj);
+        <br />用于设置单页面固定的上下文的环境参数，参数传递的是对象
+		<br />
+        <br />visLog.setParaUnfixed(obj);
+        <br />用于设置在连播，或者节目单环境下，类似mediacode这类在单页面会变化的参数，参数传递的是对象
+        <br />
+        <br />visLog.send(str);
+        <br />参数为："playend"|"playstart"
+        <br />用于设置在连播，或者节目单环境下，跳转节目时，或者在跳转离开播控页面，或者release视频时，即无法自然触发bjf的视频开始结束日志时，页面主动发送当前视频日志。
+        <br /> 
+		<br />注意：如需要发送日志，visLog.setUrl(url),visLog.setParaFixed(obj),visLog.setParaUnfixed(obj)需要在*.start()前设置好，否则不会发送日志。
+        <br />注意：如引用了多个功能点，注意bjf.player.plugin.playmode不要相互覆盖，可以添加到一个bjf.player.plugin.playmode里面。
+        <br />附加功能是为了满足业务的个性化需求而开发的，可以根据实际需求进行修改。
+        <br /><a href="bjf.player.visLog.js">获取bjf.player.visLog.js文件</a>
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+visLog.setUrl("http://222.68.195.222:8090/log/visplay");
+<br />
+visLog.setParaFixed({
+	u:"tv157410754428itv",
+	s:"subject",
+	v:"1",	
+});
+<br />
+visLog.setParaUnfixed({
+	mediaCode:"Umai:PROG/1461@BESTV.STA.SMG",	
+});
+<br />
+visLog.send("playend");
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name"><a id="volFadeIn"></a>bjf.player.volFadeIn.js</div>
+        <div class="content">在页面中引入该文件，可添加视频开始时音量渐强的功能。
+        <br />
+        <br />里面有3个函数，页面端需要进行调用：
+        <br />volFadIn.setVideo(o);
+        <br />参数是要控制的视频的对象。
+        <br />
+        <br />volFadIn.setPara(step,time)
+		<br />设置音量增长的步长和时间间隔，不设置就使用默认数据，每100ms增长%5；
+        <br />
+        <br />volFadIn.setSwitch(str)
+        <br />设置开关，"on"|"off"，默认为关闭;
+        <br />在渐强的过程中设置关闭，会终止渐强。
+		<br />
+        <br />注意：音量渐强过程中，如遥控器操作音量+-键，可能引起声音的混乱。
+		<br />注意：如引用了多个功能点，注意bjf.player.plugin.playmode不要相互覆盖，可以添加到一个bjf.player.plugin.playmode里面。
+        <br />附加功能是为了满足业务的个性化需求而开发的，可以根据实际需求进行修改。
+        <br /><a href="bjf.player.volFadeIn.js">获取bjf.player.volFadeIn.js文件</a>
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var vod = new bjf.player.video("vod");
+……
+volFadIn.setVideo(vod);
+volFadIn.setPara(5,100);
+volFadIn.setSwitch("on");
+……
+vod.start();
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <div class="doc">
+    	<div class="name">建立页面播控需要的：</div>
+        <div class="content">
+        	<br />
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+        vod = new bjf.player.video("BJFPlayerVod");
+        vod.setUIErrorShow("off");
+        vod.setDisplayArea(1280,720,0,0);
+        vod.setUIImagePath("bjf/images/skin_1280/");
+        vod.setUILoadShow("on");
+        vod.setUITitle("星球大战");
+        vod.setUICastRoles("导演：*** 主演：***");
+        if( time_ > 0 ) vod.setPlayTime(time_);
+        vod.setPlayUrl(playUrl_,"VOD",mediaCode_); //播放地址    "VOD"|"TVOD"|"CHANNEL"   mediaCode
+        vod.setTrickMode("on")
+        vod.setFocusVideo();
+        vod.start();
+        
+        ……
+        
+        bjf.player.custom.playmode = function(N,playmode){
+        if( N !== "BJFPlayerVod" ) return;
+        switch( playmode ){
+            case "pause":
+                break;
+            case "hideUI":
+                break;
+            case "end":
+                break;
+            case "begin":
+                break;
+            case "back":
+                break;
+            }
+        };
+    
+        bjf.player.custom.virtual = function(N,s){
+            if( N !== "BJFPlayerVod" ) return;
+            switch( s ){
+                case "error":
+                    break;
+                case "restore":
+                    break;
+            }
+        };
+        
+        bjf.remoter.onKeyFf(function(e){
+            bjf.player.onKey('FF', e);
+        });
+            
+        bjf.remoter.onKeyFr(function(e){
+            bjf.player.onKey('FR', e);
+        });
+                        
+        bjf.remoter.onKeyRight(function(e){
+            bjf.player.onKey('Right', e);
+        });
+            
+        bjf.remoter.onKeyLeft(function(e){
+            bjf.player.onKey('Left', e);
+        });
+        
+        bjf.remoter.onKeyOk(function(e){
+            bjf.player.onKey('Ok', e);
+        });
+        
+        bjf.remoter.onKeyPrev(function(e){
+            bjf.player.onKey('Prev', e);
+        });
+            
+        bjf.remoter.onKeyNext(function(e){
+            bjf.player.onKey('Next', e);
+        });
+        
+        bjf.remoter.onKeyPause(function(e){
+            bjf.player.onKey('Pause', e);
+        });
+        
+        bjf.remoter.onKeyMute(function(e){
+            bjf.player.onKey('Mute', e);
+        });
+        
+        bjf.remoter.onKeyVolUp(function(e){
+            bjf.player.onKey('VolUp', e);
+        });
+        
+        bjf.remoter.onKeyVolDown(function(e){
+            bjf.player.onKey('VolDown', e);
+        });
+        
+        bjf.remoter.onKeyBack(function(e){
+            bjf.player.onKey('Back', e);
+        });
+        
+        bjf.remoter.onKeyAudio(function(e){
+            bjf.player.onKey('Audio', e);
+        });
+                    
+                </code>
+            </pre>
+        </div>
+    </div>
+    
+    <!--
+    <div class="doc">
+    	<div class="name"><a id="option"></a>bjf.player.option.js</div>
+        <div class="content">该功能只是连续剧，纪录片在播放过程中通过上下键呼出选集面板的简单示例。
+        <br />页面需要自定义option.show，option.hide的内容展示，以及光标等。
+        <br />
+        <br />附加功能是为了满足业务的个性化需求而开发的，需要根据实际需求进行修改。
+        <br /><a href="bjf.player.option.js">获取bjf.player.option.js文件</a>
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+                </code>
+            </pre>
+        </div>
+    </div>
+    -->
+    <style type="text/css">
+	/*
+	body{ background:#CCC;font-size: 20px;}
+	.h1 {
+		font-size: 28px;
+	}
+	
+	.title {
+		font-size: 24px;
+	}
+	*/
+	
+	.table{ border:1px solid #999; }
+	.table td{ padding:5px; border:1px solid #999;}
+	#topBtn{ position: fixed; top:30px; right:30px; }
+	</style>
+    <div id="topBtn"><a href="#list">TOP</a></div>
+    <script src="../xdoc/highlight/highlight.pack.js"></script>
+    <script>
+        hljs.initHighlightingOnLoad();
+		
+		
+    </script>
+</body>
+</html>

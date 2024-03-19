@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>bjf base</title>
+    <link rel="stylesheet" href="../xdoc/demo.css">
+    <link rel="stylesheet" href="../xdoc/highlight/styles/monokai-sublime.css">
+</head>
+<body>
+    <div class="h1">bjf base模块</div>
+    <div class="desc">该模块负责收集系统信息，提供当前环境信息。以及提供一些基础的Dom操作、Ajax函数等
+        <br />具体使用效果可参考<a target="_blank" href="demo.html">示例页面</a>
+    </div>
+    <div class="title">方法和对象列表：</div>
+    <div>
+       <ul>
+            <li><a href="#env">bjf.env</a></li>
+            <li><a href="#d">bjf.$</a></li>
+            <li><a href="#dd">bjf.$$</a></li>
+            <li><a href="#addClass">bjf.addClass</a></li>
+            <li><a href="#delClass">bjf.delClass</a></li>
+            <li><a href="#hasClass">bjf.hasClass</a></li>
+            <li><a href="#setAttribute">bjf.setAttribute</a></li>
+            <li><a href="#getAttribute">bjf.getAttribute</a></li>
+            <li><a href="#get">bjf.get</a></li>
+            <li><a href="#post">bjf.post</a></li>
+            <li><a href="#getJson">bjf.getJson</a></li>
+            <li><a href="#syncGet">bjf.syncGet</a></li>
+            <li><a href="#syncPost">bjf.syncPost</a></li>
+            <li><a href="#syncGetJson">bjf.syncGetJson</a></li>
+            <li><a href="#repairIndexFocus">bjf.repairIndexFocus</a></li>
+        </ul>
+    </div>
+    <div class="title">方法和对象说明：</div>
+    <div class="doc">
+        <div class="name"><a id="env"></a>bjf.env</div>
+        <div class="content">bjf.env对象，包含了当前页面的运行环境信息。<br />对象的结构和属性说明如下</div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.env : {
+    'type'       : 'android', //android | ios | iptv | ott | pc 所处平台类型
+    'ua'         : 'xxx',     //原始的userAgent
+    'h5class'    : 1,         //是否支持classList对象来操作class的更新
+    'h5selector' : 1,         //是否支持querySelector等选择器
+    'androidV'   : '0',       //安卓版本 0未知版本 | 1 iptv众盒子 | 4.x - 6.x 当前设备的安卓版本 | 98 ios设备 | 99 PC
+}
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="d"></a>bjf.$(queryStr)</div>
+        <div class="content">Dom查询器，一般用来代替getElementById等函数<br />如果是支持HTML5的环境，会使用document.querySelector来进行查询</div>
+        <div class="content">@param  queryStr 查询字符串</div>
+        <div class="content">@return Element 单个Dom元素 </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.$('#id');      //根据ID查询
+bjf.$('.class');   //根据ClassName查询
+bjf.$('@name');    //根据Name查询
+bjf.$('div');      //根据tag name查询
+bjf.$('.class.selected'); //根据多ClassName查询
+bjf.$('.class > .subclass'); //多层查询，仅支持HTML5环境
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="dd"></a>bjf.$$(queryStr)</div>
+        <div class="content">Dom查询器，一般用来代替getElementsByName等函数<br />如果是支持HTML5的环境，会使用document.querySelector来进行查询</div>
+        <div class="content">@param  queryStr 查询字符串</div>
+        <div class="content">@return NodeList 返回一组Dom元素</div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.$$('.class');   //根据ClassName查询
+bjf.$$('@name');    //根据Name查询
+bjf.$$('div');      //根据tag name查询
+bjf.$$('.class > .subclass'); //多层查询，仅支持HTML5环境
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="addClass"></a>bjf.addClass(element, className)</div>
+        <div class="content">给在某个Dom节点上新加className<br />如果是支持HTML5的环境，会使用element.classList.add来进行操作</div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.addClass(bjf.$('.class'), 'on');
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="delClass"></a>bjf.delClass(element, className)</div>
+        <div class="content">移除某个Dom节点上对应的className<br />如果是支持HTML5的环境，会使用element.classList.remove来进行操作</div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.delClass(bjf.$('.class'), 'on');
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="hasClass"></a>bjf.hasClass(element, className)</div>
+        <div class="content">判断某个Dom节点是否包含对应的className<br />如果是支持HTML5的环境，会使用element.classList.contains来进行操作</div>
+        <div class="content">@return true | false</div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.hasClass(bjf.$('.class'), 'on');
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="setAttribute"></a>bjf.setAttribute(element, name, value)</div>
+        <div class="content">由于有些IE内核的盒子，不支持原生的setAttribute方法，所以框架提供此方法来设置Dom元素的属性。并保证兼容性<br />框架在页面加载时，会利用探针探测盒子是否支持setAttribute方法，如果不支持，则利用DomNode.style对象来保存value。</div>
+        <div class="content">@return true | false</div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.setAttribute(bjf.$('.class'), 'url', 'http://www.xxxx.com');
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="getAttribute"></a>bjf.getAttribute(element, name)</div>
+        <div class="content">由于有些IE内核的盒子，不支持原生的setAttribute方法，所以框架提供此方法来获取Dom元素的属性。并保证兼容性<br />框架在页面加载时，会利用探针探测盒子是否支持setAttribute方法，如果不支持，则利用DomNode.style对象来保存value。获取时也就从此对象里获取</div>
+        <div class="content">@return {value} | null</div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+var a = bjf.getAttribute(bjf.$('.class'), 'url');
+//a='http://www.xxxx.com'
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="get"></a>bjf.get(url, data)</div>
+        <div class="content">Ajax封装，用get方式来异步获取内容<br />参数可变，可按需组织</div>
+        <div class="content">@param url, data</div>
+        <div class="content">@param url, callBackFunc</div>
+        <div class="content">@param url, data, callBackFunc</div>
+        <div class="content">@param url, callBackFunc，onErrorCallBackFunc</div>
+        <div class="content">@param url, data, callBackFunc，onErrorCallBackFunc</div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+//参数是url和data
+bjf.get('index.php', {page:1, index:2});
+
+//参数是url和callBackFunc
+bjf.get('index.php', function (data) {
+    console.log(data);
+});
+
+//参数是url和data和callBackFunc
+bjf.get('index.php', {page:1, index:2}, function (data) {
+    console.log(data);
+});
+
+//参数是url和callBackFunc和onErrorCallBackFunc
+bjf.get('index.php', function (data) {console.log(data);},
+function(msgCode){}//访问错误url时想做的处理,msgCode为url错误时返回码
+);
+
+//参数是url和data和callBackFunc和onErrorCallBackFunc
+bjf.get('index.php', {page:1, index:2}, function (data) {console.log(data);},
+    function(msgCode){}//访问错误url时想做的处理,msgCode为url错误时返回码
+);
+
+                </code>
+            </pre>
+        </div>
+    </div>
+<div class="doc">
+    <div class="name"><a id="syncGet"></a>bjf.syncGet(url, data)</div>
+    <div class="content">Ajax封装，用get方式来同步获取内容<br />参数可变，可按需组织</div>
+    <div class="content">@param url, data</div>
+    <div class="content">@param url, callBackFunc</div>
+    <div class="content">@param url, data, callBackFunc</div>
+    <div class="content">@param url, callBackFunc，onErrorCallBackFunc</div>
+    <div class="content">@param url, data, callBackFunc，onErrorCallBackFunc</div>
+    <div class="demo">
+        <pre>
+            <code class="javascript">
+//参数是url和data
+bjf.syncGet('index.php', {page:1, index:2});
+
+//参数是url和callBackFunc
+bjf.syncGet('index.php', function (data) {
+console.log(data);
+});
+
+//参数是url和data和callBackFunc
+bjf.syncGet('index.php', {page:1, index:2}, function (data) {
+console.log(data);
+});
+
+//参数是url和callBackFunc和onErrorCallBackFunc
+bjf.syncGet('index.php', function (data) {console.log(data);},
+function(msgCode){}//访问错误url时想做的处理,msgCode为url错误时返回码
+);
+
+//参数是url和data和callBackFunc和onErrorCallBackFunc
+bjf.syncGet('index.php', {page:1, index:2}, function (data) {console.log(data);},
+function(msgCode){}//访问错误url时想做的处理,msgCode为url错误时返回码
+);
+
+            </code>
+        </pre>
+    </div>
+</div>
+    <div class="doc">
+        <div class="name"><a id="post"></a>bjf.post(url, data)</div>
+        <div class="content">Ajax封装，用post方式来异步获取内容<br />参数可变，可按需组织</div>
+        <div class="content">@param url, data</div>
+        <div class="content">@param url, callBackFunc，但此方法不传数据，建议用get方法代替</div>
+        <div class="content">@param url, data, callBackFunc</div>
+        <div class="content">@param url, data, callBackFunc，onErrorCallBackFunc</div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+//参数是url和data
+bjf.post('index.php', {page:1, index:2});
+
+//参数是url和callBackFunc 但此方法不传数据，建议用get方法代替
+bjf.post('index.php', function (data) {
+    console.log(data);
+});
+
+//参数是url和data和callBackFunc
+bjf.post('index.php', {page:1, index:2}, function (data) {
+console.log(data);
+});
+
+//参数是url和data和callBackFunc
+bjf.post('index.php', {page:1, index:2}, function (data) {console.log(data);},
+function(msgCode){}//访问错误url时想做的处理,msgCode为url错误时返回码
+);
+
+
+                </code>
+            </pre>
+        </div>
+    </div>
+
+<div class="doc">
+    <div class="name"><a id="syncPost"></a>bjf.syncPost(url, data)</div>
+    <div class="content">Ajax封装，用post方式来同步获取内容<br />参数可变，可按需组织</div>
+    <div class="content">@param url, data</div>
+    <div class="content">@param url, callBackFunc，但此方法不传数据，建议用syncGet方法代替</div>
+    <div class="content">@param url, data, callBackFunc</div>
+    <div class="content">@param url, data, callBackFunc，onErrorCallBackFunc</div>
+    <div class="demo">
+        <pre>
+            <code class="javascript">
+//参数是url和data
+bjf.syncPost('index.php', {page:1, index:2});
+
+//参数是url和callBackFunc 但此方法不传数据，建议用syncGet方法代替
+bjf.syncPost('index.php', function (data) {
+console.log(data);
+});
+
+//参数是url和data和callBackFunc
+bjf.syncPost('index.php', {page:1, index:2}, function (data) {
+console.log(data);
+});
+
+//参数是url和data和callBackFunc和onErrorCallBackFunc
+bjf.syncPost('index.php', {page:1, index:2}, function (data) {console.log(data);},
+function(msgCode){}//访问错误url时想做的处理,msgCode为url错误时返回码
+);
+            </code>
+        </pre>
+    </div>
+</div>
+
+    <div class="doc">
+        <div class="name"><a id="getJson"></a>bjf.getJson(url, data)</div>
+        <div class="content">Ajax封装，用post或get或jsonp方式来异步获取经过解析好的Json内容<br />参数可变，可按需组织</div>
+        <div class="content">@param url, data //默认用get方式</div>
+        <div class="content">@param url, data, callBackFunc//默认用get方式</div>
+        <div class="content">@param url, data, callBackFunc, onErrorCallBackFunc//默认用get方式</div>
+        <div class="content">@param url, callBackFunc//默认用get方式</div>
+        <div class="content">@param url, callBackFunc, onErrorCallBackFunc//默认用get方式</div>
+        <div class="content">@param url, method(post或get或jsonp)</div>
+        <div class="content">@param url, method(post或get或jsonp), callBackFunc</div>
+        <div class="content">@param url, method(post或get或jsonp), data, callBackFunc</div>
+        <div class="content">@param url, method(post或get或jsonp), data, callBackFunc, onErrorCallBackFunc</div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+//参数是url和data
+bjf.getJson('index.php', {page:1, index:2});
+
+//参数是url和callBackFunc
+bjf.getJson('index.php', function (jsonData) {
+    console.log(jsonData);
+});
+
+//参数是url和method和callBackFunc
+bjf.getJson('index.php', 'get', function (jsonData) {
+    console.log(jsonData);
+});
+
+//参数是url和method和callBackFunc和onErrorCallBackFunc
+bjf.getJson('index.php', 'get', function (jsonData) {
+console.log(jsonData);}, function (data) {console.log(data);},
+function(msgCode){}//访问错误url时想做的处理,msgCode为url错误时返回码
+);
+                </code>
+            </pre>
+        </div>
+    </div>
+
+
+<div class="doc">
+    <div class="name"><a id="syncGetJson"></a>bjf.syncGetJson(url, data)</div>
+    <div class="content">Ajax封装，用post或get方式来同步获取经过解析好的Json内容<br />参数可变，可按需组织</div>
+    <div class="content">@param url, data //默认用post方式</div>
+    <div class="content">@param url, data, callBackFunc//默认用post方式</div>
+    <div class="content">@param url, data, callBackFunc, onErrorCallBackFunc//默认用post方式</div>
+    <div class="content">@param url, callBackFunc//默认用post方式</div>
+    <div class="content">@param url, callBackFunc, onErrorCallBackFunc//默认用post方式</div>
+    <div class="content">@param url, method(post或get)</div>
+    <div class="content">@param url, method(post或get), callBackFunc</div>
+    <div class="content">@param url, method(post或get), data, callBackFunc</div>
+    <div class="content">@param url, method(post或get), data, callBackFunc, onErrorCallBackFunc</div>
+    <div class="demo">
+        <pre>
+            <code class="javascript">
+//参数是url和data
+bjf.syncGetJson('index.php', {page:1, index:2});
+
+//参数是url和callBackFunc
+bjf.syncGetJson('index.php', function (jsonData) {
+console.log(jsonData);
+});
+
+//参数是url和method和callBackFunc
+bjf.syncGetJson('index.php', 'get', function (jsonData) {
+console.log(jsonData);
+});
+
+//参数是url和method和callBackFunc和onErrorCallBackFunc
+bjf.syncGetJson('index.php', 'get', function (jsonData) {
+console.log(jsonData);}, function (data) {console.log(data);},
+function(msgCode){}//访问错误url时想做的处理,msgCode为url错误时返回码
+);
+            </code>
+        </pre>
+    </div>
+</div>
+
+    
+    <div class="doc">
+        <div class="name"><a id="repairIndexFocus"></a>bjf.repairIndexFocus()</div>
+        <div class="content">当按遥控器首页，刷新时，某些型号的机顶盒可能会失去焦点，导致刷新后遥控器onkeydown监听失效。</div>
+        <div class="content">用此方法，可在需要的页面，检测机顶盒型号，并修复页面焦点。</div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+//在页面底部，添加如下代码，可防止某些特定机顶盒因兼容性问题，导致页面失焦
+bjf.repairIndexFocus();
+                </code>
+            </pre>
+        </div>
+    </div>
+    <script src="../xdoc/highlight/highlight.pack.js"></script>
+    <script>
+        hljs.initHighlightingOnLoad();
+    </script>
+</body>
+</html>

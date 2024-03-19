@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>机顶盒前端页面开发指引</title>
+<link rel="stylesheet" href="../xdoc/demo.css">
+<link rel="stylesheet" href="../xdoc/highlight/styles/monokai-sublime.css">
+<style type="text/css">
+textarea {
+	background: #23241f;
+	color: #a6e22e;
+	border: #23241f;
+	padding: 10px;
+}
+</style>
+</head>
+<body>
+<div class="h1">相对定位</div>
+<div class="desc"> 相对定位是一个非常容易掌握的概念。如果对一个元素进行相对定位，它将出现在它所在的位置上。然后，可以通过设置垂直或水平位置，让这个元素“相对于”它的起点进行移动。<br>
+  如果将 top 设置为 20px，那么框将在原位置顶部下面 20 像素的地方。如果 left 设置为 30 像素，那么会在元素左边创建 30 像素的空间，也就是将元素向右移动。<br>
+</div>
+<textarea style="width:800px; height:400px;">
+<style type="text/css">
+.box{
+	width:300px;
+	height:100px;
+	background:#FCF;
+	margin:10px;
+	padding:10px;
+	}
+#box2 {
+  position: relative;
+  left: 30px;
+  top: 20px;
+  background:#FFC
+}
+</style>
+<div id="box1" class="box">1</div>
+<div id="box2" class="box">2</div>
+<div id="box3" class="box">3</div>
+</textarea>
+<style type="text/css">
+.box{
+	width:300px;
+	height:100px;
+	background:#FCF;
+	margin:10px;
+	}
+#box2 {
+  position: relative;
+  left: 30px;
+  top: 20px;
+  background:#FFC
+}
+</style>
+<div id="box1" class="box">1</div>
+<div id="box2" class="box">2</div>
+<div id="box3" class="box">3</div>
+</body>
+</html>

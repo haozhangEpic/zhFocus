@@ -1,0 +1,107 @@
+<!--
+ * @Author: liu.jiadong liu.jiadong@bestv.com.cn
+ * @Date: 2023-07-19 11:32:12
+ * @LastEditors: liu.jiadong liu.jiadong@bestv.com.cn
+ * @LastEditTime: 2023-07-26 14:45:36
+ * @FilePath: /bjf_pack/code/bjf/player/demo.html
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+-->
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Page-Enter" content="blendTrans(Duration=1.0)"/>
+<meta name="page-view-size" content="1280*720" />
+<meta name="viewport" content="width=1280, initial-scale=1, user-scalable=no" />
+<title>V6.0 Play</title>
+<style type="text/css">
+body {
+	height: 1080px;
+	width: 1920px;
+	margin: 0px;
+	color: #999;
+	font-size: 28px;
+	font-family: "Microsoft YaHei", Heiti, SimSun;
+	-webkit-text-rendering: optimizeSpeed;
+	-webkit-image-rendering: optimizeSpeed;
+	background-color: transparent;
+	background-repeat: no-repeat;
+}
+</style>
+</head>
+<body onUnload = "leave()" >
+<script src="../base/bjf.js"></script>
+<script src="../remoter/remoter.js"></script>
+<script src="../focus/focus.js"></script>
+<script src="../debug/debug.js"></script>
+<script src="../player/player.js"></script>
+<script>
+bjf.openDebug();
+
+bjf.player.custom.begin = function(N){
+	if( N === "vod" ){
+		//……
+	}
+};
+
+bjf.player.custom.error = function(e,N){
+	if( N !== "vod" ) return;
+	//……
+};
+
+bjf.player.custom.restore = function(e,N){
+	if( N !== "vod" ) return;
+	if( e.type === "EVENT_STB_RESTORE" ){
+		//……
+	}
+};
+
+bjf.player.custom.backShow = function(e,N){
+	if( N === "vod" ) leave();
+};
+
+bjf.player.custom.endShow = function(N){
+	if( N === "vod" ) leave();
+};
+
+function leave(){
+try{
+	vod.release();
+	setTimeout(function(){
+		//document.location.href = "";
+	},100);
+}catch(e){ bjf.debug("leave error:"+e); }
+}
+
+var vod;
+function playVod(playUrl_,mediaCode_,vodID_,mediaID_,name_,time_){	
+	bjf.player.clearVirtualEvent();	
+	
+	vod = new bjf.player.video("vod");
+	vod.setUIImagePath("bjf/images/skin_1920/");
+	vod.setUILoadShow("on");
+	vod.setUITitle(name_);
+	vod.setUICastRoles("未知" );
+	vod.setUIErrorShow("off"); //关闭媒体错误提示
+	if( time_ > 0 ) vod.setPlayTime(time_);
+	vod.setDisplayArea(1280,720,0,0);
+	vod.setPlayUrl(playUrl_,"VOD",mediaCode_); //播放地址    "VOD"|"TVOD"|"CHANNEL"   mediaCode
+	vod.setFocusVideo();
+	vod.start();
+	
+	setTimeout(function(){
+		vod.setDisplayArea(640,530,0,0);
+		
+		vod.videoShow();
+	},9000);
+}
+
+(function(){
+	//var playUrl = "rtsp://10.61.13.35/88888888/16/20170410/268436197/268436197.ts?rrsip=10.61.13.35&icpid=SSPID&accounttype=1&limitflux=-1&limitdur=-1&accountinfo=eh2By16TPouC+2sJClcrq5bYgkS9F4KtDHKV0eIQb7i7Fy0QnGm/m23wZeAgnRtLFwX5P7JltQehUI6rutjaXkFh4JNrGb1DNv8upoSLW8l8Jv+XnmO2AO41Rl6vXRtUc+uc7haTxQ4RuAV4pSMNrg==:20170616135331,99992005,10.61.2.223,20170616135331,Umai:PROG/5165@BESTV.STA.SMG,A1D1D6263A99349C6DC83109CB9DBAC3,0,1,0,,1,1,,,775,1,END&ACSADDR=10.61.13.17|33500";
+	var playUrl = "http://vjs.zencdn.net/v/oceans.mp4";
+	playVod(playUrl,"Umai:PROG/5165@BESTV.STA.SMG","","","惊悚片",5);
+
+})()
+</script>
+</body>
+</html>

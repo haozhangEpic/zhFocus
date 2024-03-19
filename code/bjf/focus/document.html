@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>bjf focus</title>
+    <link rel="stylesheet" href="../xdoc/demo.css">
+    <link rel="stylesheet" href="../xdoc/highlight/styles/monokai-sublime.css">
+</head>
+<body>
+<div class="h1">bjf focus模块</div>
+<div class="desc">该模块将提供光标控制和管理等一系列功能和对象
+    <br /><strong>遥控器</strong>作为操作光标移动的关键设备，该模块已经将"控制光标移动"设置成为<strong>遥控器</strong>主要按键的默认监听函数。详见<a href="../remoter/demo.html#setDefaultHandler">设置默认监听</a>
+    <br />关于光标系统的原理，请参考<a target="_blank" href="../xdoc/BJF.Focus模块光标系统使用指南.pdf">光标系统使用指南文档</a>，和<a target="_blank" href="demo.html">demo演示</a>此处不再做详细描述。
+    <br />光标系统定义了一系列光标事件，页面可以监听这些光标事件来实现自己特有的逻辑和效果，具体参见<a href="#bjf.focus">focus事件列表</a>
+    <br />V1.1.0版本开始对光标新增了几个特性<a target="_blank" href="../xdoc/BJF.Focus模块光标系统使用指南.pdf">光标系统使用指南文档</a>
+</div>
+    <div class="notice">如果通过build方法构建光标系统，需要修改DomNode的属性时，请使用bjf.setAttribute方法来设置，否则不能保证兼容性。详见<a href="../base/document.html#setAttribute">bjf.setAttribute方法</a></div>
+<div class="title">方法和对象列表：</div>
+<div>
+    <ul>
+        <li><a href="#FocusNode">FocusNode</a></li>
+        <li><a href="#addChild">FocusNode.addChild</a></li>
+        <li><a href="#replaceChild">FocusNode.replaceChild</a></li>
+        <li><a href="#getPosterity">FocusNode.getPosterity</a></li>
+        <li><a href="#getChild">FocusNode.getChild</a></li>
+        <li><a href="#filterDisabled">FocusNode.filterDisabled</a></li>
+        <li><a href="#getAliveChild">FocusNode.getAliveChild</a></li>
+        <li><a href="#getFirstChild">FocusNode.getFirstChild</a></li>
+        <li><a href="#getLastChild">FocusNode.getLastChild</a></li>
+        <li><a href="#removeChildren">FocusNode.removeChildren</a></li>
+        <li><a href="#coordTostr">FocusNode.coordTostr</a></li>
+        <li><a href="#getByOffset">FocusNode.getByOffset</a></li>
+        <li><a href="#saveId">FocusNode.saveId</a></li>
+        <li><a href="#getLeft">FocusNode.getLeft</a></li>
+        <li><a href="#getRight">FocusNode.getRight</a></li>
+        <li><a href="#getAbove">FocusNode.getAbove</a></li>
+        <li><a href="#getUnder">FocusNode.getUnder</a></li>
+        <li><a href="#getUnder">FocusNode.getUnder</a></li>
+        <li><a href="#dispatchEvent">FocusNode.dispatchEvent</a></li>
+        <li><a id="bjf.focus"></a><a href="#focus">bjf.focus</a></li>
+        <li><a href="#init">bjf.focus.init</a></li>
+        <li><a href="#initByhistory">bjf.focus.initByhistory</a></li>
+        <li><a href="#change">bjf.focus.change</a></li>
+        <li><a href="#up">bjf.focus.up</a></li>
+        <li><a href="#down">bjf.focus.down</a></li>
+        <li><a href="#left">bjf.focus.left</a></li>
+        <li><a href="#right">bjf.focus.right</a></li>
+        <li><a href="#ok">bjf.focus.ok</a></li>
+        <li><a href="#getHistory">bjf.focus.getHistory</a></li>
+        <li><a href="#addEventListener">bjf.focus.addEventListener</a></li>
+        <li><a href="#build">bjf.focus.build</a></li>
+        <li><a href="#eventDefault">bjf.focus.eventDefault</a></li>
+    </ul>
+</div>
+<div class="title">方法和对象说明：</div>
+<div class="doc">
+    <div class="name"><a id="FocusNode"></a>FocusNode(attributes)</div>
+    <div class="content">FocusNode是一个光标节点构造器，通过改构造器创建出的对象，是一个标准的光标节点。页面中通过创建多个光标节点来构造出光标系统。
+        <br />光标节点对象，可由页面自主创建，或由bjf.focus.build方法从html中自动识别创建
+    </div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+FocusNode = function (args) {
+    args        = args || {};
+    this.x      = args.x || 0; //光标在坐标系中的x值
+    this.y      = args.y || 0; //光标在坐标系中的y值
+    this.status = ('undefined' == typeof(args.status)) ? 1 : args.status;//光标状态，是否可用
+    this.data   = args.data || null;//光标节点需要保存的数据
+    this.id     = args.id || null;//节点id
+    this.parent = null;//父节点
+
+    //以下几个事件，只有focus集合才会被执行
+    this.cache          = args.cache || 0;//光标跳出该集合时，是否记住光标所在子结点的ID
+    this.saved_id       = args.saved_id || null;//光标跳出该集合时，所在子结点的ID，当光标再次跳入此集合是恢复该节点的亮起状态
+    this.saved_dir      = args.saved_dir || null;//光标跳出该集合时的方向
+    this.default_node   = args.default_node || null; //第一次进来默认高亮的子结点
+    //子结点
+    this.children       = [];
+    //活着的子结点
+    this.alive_children = null;
+    //是否是光标集合，通过是否有子结点来判断，如果有调用过addChild说明是一个实体光标节点，没有则说明是一个光标集合
+    this.is_collection  = 0;
+};
+                </code>
+            </pre>
+    </div>
+    <div class="content">FocusNode分两种类型, 一种是可落焦的光标按钮节点, 一种是光标集合节点(一堆FocusNode的集合)。
+        <br />只有光标集合节点的cache、saved_id、saved_dir、default_node、children和alive_children为有效属性,并且is_collection值为1。
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="addChild"></a>FocusNode.addChild(node)</div>
+    <div class="content">给光标集合节点添加子结点，并绑定父子关系</div>
+    <div class="content">@param node 待添加的子节点[FocusNode对象]</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+var menu_node = new FocusNode();
+main_focus.addChild(menu_node);
+                </code>
+            </pre>
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="replaceChild"></a>FocusNode.replaceChild(x, y, node)</div>
+    <div class="content">替换指定位置的子结点，该位置原来的结点会和parent解除父子关系</div>
+    <div class="content">@param x    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;要替换位置的x值[int类型]</div>
+    <div class="content">@param y    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;要替换位置的y值[int类型]</div>
+    <div class="content">@param node 新的节点对象[FocusNode对象]</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+var x = 1, y = 1;
+var menu_node = new FocusNode();
+main_focus.replaceChild(x, y, menu_node);
+                </code>
+            </pre>
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="getPosterity"></a>FocusNode.getPosterity(x, y, dir)</div>
+    <div class="content">获取指定位置(或方向)的子结点，会向里层递归</div>
+    <div class="content">@param x   &nbsp;&nbsp;&nbsp;要获取位置的x值[int类型]</div>
+    <div class="content">@param y   &nbsp;&nbsp;&nbsp;要获取位置的y值[int类型]</div>
+    <div class="content">@param dir 搜索方向。默认为''(空)获取第一个子节点，-1获取最后一个子节点[int类型]</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+var x = 1, y = 1, dir = -1;
+main_focus.getPosterity(x, y, dir);
+                </code>
+            </pre>
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="getChild"></a>FocusNode.getChild(x, y)</div>
+    <div class="content">获取当前光标集下的某个子结点，不向里层递归</div>
+    <div class="content">@param x   要获取子结点的x值[int类型]</div>
+    <div class="content">@param y   要获取子结点的y值[int类型]</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+var x = 1, y = 1;
+main_focus.getChild(x, y);
+                </code>
+            </pre>
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="getAliveChild"></a>FocusNode.getAliveChild(x, y)</div>
+    <div class="content">获取当前光标集下的某个可用子结点，不向里层递归，此方法主要针对光标集下存在不可用子结点(status = 0)的情况</div>
+    <div class="content">@param x   要获取子结点的x值[int类型]</div>
+    <div class="content">@param y   要获取子结点的y值[int类型]</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+var x = 1, y = 1;
+main_focus.getAliveChild(x, y);
+                </code>
+            </pre>
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="filterDisabled"></a>FocusNode.filterDisabled()</div>
+    <div class="content">过滤当前光标集下所以不可用的子结点</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+main_focus.filterDisabled();
+                </code>
+            </pre>
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="getFirstChild"></a>FocusNode.getFirstChild()</div>
+    <div class="content">获得第一个子结点</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+main_focus.getFirstChild();
+                </code>
+            </pre>
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="getLastChild"></a>FocusNode.getLastChild()</div>
+    <div class="content">获得最后一个子结点</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+main_focus.getLastChild();
+                </code>
+            </pre>
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="removeChildren"></a>FocusNode.removeChildren()</div>
+    <div class="content">移除所有子结点，并断开父子关系</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+main_focus.removeChildren();
+                </code>
+            </pre>
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="_getUncle"></a>FocusNode._getUncle(offsetX, offsetY)</div>
+    <div class="content">获取父节点的兄弟节点</div>
+    <div class="content">@param offsetX   x轴上的偏移值；-1左移、1右移[int类型]</div>
+    <div class="content">@param offsetY   y轴上的偏移值；-1上移、1下移[int类型]</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+var offsetX = 1, offsetY = 1;
+main_focus._getUncle(offsetX, offsetY);
+                </code>
+            </pre>
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="coordTostr"></a>FocusNode.coordTostr()</div>
+    <div class="content">将节点所在的坐标路由转换成字符串
+        <br/>转换格式如下："x-y:parent.x-parent.y....top.x-top.y" 如："0-2:0-0:0-1:1-1:0-0"
+    </div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+main_focus.coordTostr();
+                </code>
+            </pre>
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="getByOffset"></a>FocusNode.getByOffset(offsetX, offsetY)</div>
+    <div class="content">根据当前节点的偏移量来获取兄弟结点</div>
+    <div class="content">@param offsetX   x轴上的偏移值；-1左移、1右移[int类型]</div>
+    <div class="content">@param offsetY   y轴上的偏移值；-1上移、1下移[int类型]</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+var offsetX = 1, offsetY = 1;
+main_focus.getByOffset(offsetX, offsetY);
+                </code>
+            </pre>
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="saveId"></a>FocusNode.saveId(x, y)</div>
+    <div class="content">在当前光标集中记录节点的位置</div>
+    <div class="content">@param x   要记录位置的x值[int类型]</div>
+    <div class="content">@param y   要记录位置的y值[int类型]</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+var x = this.x, y = this.y;
+main_focus.saveId(x, y);
+                </code>
+            </pre>
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="getLeft"></a>FocusNode.getLeft()</div>
+    <div class="content">获取左兄弟节点</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+main_focus.getLeft();
+                </code>
+            </pre>
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="getRight"></a>FocusNode.getRight()</div>
+    <div class="content">获取右兄弟节点</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+main_focus.getRight();
+                </code>
+            </pre>
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="getAbove"></a>FocusNode.getAbove()</div>
+    <div class="content">获取上兄弟节点</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+main_focus.getAbove();
+                </code>
+            </pre>
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="getUnder"></a>FocusNode.getUnder()</div>
+    <div class="content">获取下兄弟节点</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+main_focus.getUnder();
+                </code>
+            </pre>
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="dispatchEvent"></a>FocusNode.dispatchEvent(name_, e_)</div>
+    <div class="content">调用执行方法。按照"当前光标节点的'name_'方法、当前光标父节点集的'child_name_'方法、当前光标父节点集的'name_'方法"的优先级来执行。</div>
+    <div class="content">@param name_  方法名[string类型]</div>
+    <div class="content">@param e_     参数集[array类型]</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+var name_ = 'on', e = ;
+main_focus.dispatchEvent(name_, e_);
+                </code>
+            </pre>
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="focus"></a>bjf.focus</div>
+    <div class="content">bjf.focus是一个控制和管理光标的对象。比如在页面加载完后，默认要让光标在menu_focus的第一个按钮亮起，可通过bjf.focus.init()实现。</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.focus = {
+    locked              : 0, //光标是否锁定，锁定后不可移动。手工change也无效
+    node                : null, //当前亮起的光标节点
+    dir                 : 0, //1上，2下，3左，4右
+    DIR_UP              : 1, //上
+    DIR_DOWN            : 2, //下
+    DIR_LEFT            : 3, //左
+    DIR_RIGHT           : 4, //右
+    eventDefault        : {}, //默认的光标事件响应
+    eventRegistry       : {}, //光标事件管理器
+    init                : function (node_) {...}, //初始化光标节点，在一开始页面还没有光标时，调用此方法
+    initByhistory       : function (main_node, history) {}, //根据历史记录，初始化光标节点
+    change              : function (next_, direction_) {...}, //光标移动，让上一个按钮的光标消失，让下一个按钮的光标亮起
+    up                  : function () {...}, //光标上移
+    down                : function () {...}, //光标下移
+    left                : function () {...}, //光标左移
+    right               : function () {..}, //光标右移
+    ok                  : function () {...}, //光标所在的按钮被点击
+    getHistory          : function () {...}, //获取当前光标节点的路径，以供保存历史记录
+    addEventListener    : function (id_, name_, listener_) {...}, //为光标集或光标节点添加监听方法
+    build               : function (ele_, parent_) {...}, //为ele_下所有元素创建光标
+};
+                </code>
+            </pre>
+    </div>
+    <div class="content">bjf.focus除了上述结构所提到的几个方法外，还有下述代理方法, 分别管理光标按钮节点和光标集合节点：
+        <br/>光标按钮节点特有的方法：
+            <br/>&nbsp;  on : function () {...}, //光标落焦按钮时调用的方法
+            <br/>&nbsp;  lost : function () {...}, //光标离开按钮时调用的方法
+            <br/>&nbsp;  ok : function () {...}, //光标按钮点击ok时调用的方法
+        <br/>光标集点节点特有的方法：
+            <br/>&nbsp;  enter : function () {...}, //光标进入集合时调用的方法
+            <br/>&nbsp;  leave : function () {...}, //光标离开集合时调用的方法
+            <br/>&nbsp;  left : function () {...}, //光标在集合左边界再往左移时调用的方法
+            <br/>&nbsp;  right : function () {...}, //光标在集合右边界再往右移时调用的方法
+            <br/>&nbsp;  bottom : function () {...}, //光标在集合下边界再往下移时调用的方法
+            <br/>&nbsp;  top : function () {...}, //光标在集合上边界再往上移时调用的方法
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="init"></a>bjf.focus.init(node_)</div>
+    <div class="content">初始化光标节点，在一开始页面还没有光标时，调用此方法</div>
+    <div class="content">@param node_  选定的光标节点[FocusNode对象]</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+var node_ = main_focus.getFirstChild();
+bjf.focus.init(node_);
+                </code>
+            </pre>
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="initByhistory"></a>bjf.focus.initByhistory(main_node, history)</div>
+    <div class="content">根据历史记录注册一个光标节点
+        <br/>因为有些光标所在的按钮，一开始是隐藏的，需要点击另一个按钮(开启按钮)才能显示。所以这种情况下，一定要记录开启按钮的坐标，而且执行点击函数才可让光标显示。
+    </div>
+    <div class="content">@param main_node 光标根节点[FocusNode对象]</div>
+    <div class="content">@param history &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;是历史记录的字符串，格式是光标节点坐标值，和他的父节点的坐标值；格式"x-y:parent.x-parent.y....top.x-top.y" 如："0-2:0-0:0-1:1-1:0-0"[string类型]</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+region = bjf.focus.getHistory();
+bjf.focus.initByhistory(main_focus, region);
+                </code>
+            </pre>
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="change"></a>bjf.focus.change(next_, direction_)</div>
+    <div class="content">光标移动，让一个按钮的光标消失，让下一个按钮的光标亮起</div>
+    <div class="content">@param next_ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;需要点亮的光标节点[FocusNode对象]</div>
+    <div class="content">@param direction_ 移动方向[int类型]</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+var next_      = main_focus.getFirstChild();
+var direction_ = 1;
+bjf.focus.change(next_, direction_);
+                </code>
+            </pre>
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="up"></a>bjf.focus.up()</div>
+    <div class="content">光标向上移动</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.focus.up();
+                </code>
+            </pre>
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="down"></a>bjf.focus.down()</div>
+    <div class="content">光标向下移动</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.focus.down();
+                </code>
+            </pre>
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="left"></a>bjf.focus.left()</div>
+    <div class="content">光标向左移动</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.focus.left();
+                </code>
+            </pre>
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="right"></a>bjf.focus.right()</div>
+    <div class="content">光标向右移动</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.focus.right();
+                </code>
+            </pre>
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="ok"></a>bjf.focus.ok()</div>
+    <div class="content">点击当前光标</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.focus.ok();
+                </code>
+            </pre>
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="getHistory"></a>bjf.focus.getHistory()</div>
+    <div class="content">获取当前光标节点的路径，以供保存历史记录</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.focus.getHistory();
+                </code>
+            </pre>
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="addEventListener"></a>bjf.focus.addEventListener(id_, name_, listener_)</div>
+    <div class="content">为光标集或光标节点添加监听方法</div>
+    <div class="content">@param id_ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;光标集或光标节点的id[string类型]</div>
+    <div class="content">@param name_ &nbsp;&nbsp;&nbsp;方法组或方法名[string类型]</div>
+    <div class="content">@param listener_  方法。当为方法组时，listener_可为空；当为方法名时，listener_为方法[function类型]</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+//【写法一】name_是一个方法组，listener_参数为空
+bjf.focus.addEventListener('光标集A(填id)', {
+    'enter' : function () {
+        bjf.debug('光标集A enter');
+    }
+});
+//【写法二】name_是一个方法名，listener_为方法
+bjf.focus.addEventListener('光标集A(填id)','enter', function () {
+        bjf.debug('光标集A enter');
+});
+
+//注，两种写法功能一样。
+                </code>
+            </pre>
+    </div>
+    <div class="content">之前要求光标父节点必须传入'child_name'的方法组或方法名，现对光标父节点直接传入'_name'的方法进行了容错处理，也可以传入'_name'作为参数</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+                    //【写法一】
+                    bjf.focus.addEventListener('光标集A(填id)', {
+                        bjf.focus.addEventListener('光标集A(填id)','child_on', function () {
+                        bjf.debug('光标集A 子节点被选中');
+                    }
+                    });
+                    //【写法二】功能与写法一相同，内部已经自动转换为同'child_on'效果
+                        bjf.focus.addEventListener('光标集A(填id)','on', function () {
+                        bjf.debug('光标集A 子节点被选中');
+                    });
+
+                </code>
+            </pre>
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="build"></a>bjf.focus.build(ele_, parent_)</div>
+    <div class="content">为ele_下所有元素创建光标</div>
+    <div class="content">@param ele_  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;div元素</div>
+    <div class="content">@param parent_  父节点[FocusNode对象]</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+<span class="tag">&lt;div</span><span class="pln"> </span><span class="atn">class</span><span class="pun">=</span><span class="atv">"main"</span><span class="pln"> </span><span class="atn">id</span><span class="pun">=</span><span class="atv">"main_focus"</span><span class="tag">&gt;</span>
+<span class="pln">    </span><span class="tag">&lt;div</span><span class="pln"> </span><span class="atn">class</span><span class="pun">=</span><span class="atv">"left"</span><span class="pln"> </span><span class="atn">name</span><span class="pun">=</span><span class="atv">"fset-main_focus"</span><span class="pln"> </span><span class="atn">id</span><span class="pun">=</span><span class="atv">"left"</span><span class="pln"> </span><span class="atn">cache</span><span class="pun">=</span><span class="atv">"1"</span><span class="tag">&gt;</span>
+<span class="pln">        </span><span class="tag">&lt;div</span><span class="pln"> </span><span class="atn">class</span><span class="pun">=</span><span class="atv">"menu"</span><span class="pln"> </span><span class="atn">name</span><span class="pun">=</span><span class="atv">"fnode-left"</span><span class="pln"> </span><span class="atn">y</span><span class="pun">=</span><span class="atv">"0"</span><span class="tag">&gt;&lt;/div&gt;</span>
+<span class="pln">        </span><span class="tag">&lt;div</span><span class="pln"> </span><span class="atn">class</span><span class="pun">=</span><span class="atv">"menu"</span><span class="pln"> </span><span class="atn">name</span><span class="pun">=</span><span class="atv">"fnode-left"</span><span class="pln"> </span><span class="atn">y</span><span class="pun">=</span><span class="atv">"1"</span><span class="tag">&gt;&lt;/div&gt;</span>
+<span class="pln">    </span><span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/div&gt;</span>
+                </code>
+            </pre>
+        <p>可以看到，在class为"area_A"的div上增加了四个属性字段，这是光标集合节点<span style="color: rgb(255,0,0);">必写</span>的四个属性，</p>
+        <ul><li>"<strong>id</strong>"（光标集合节点的唯一标识），</li><li>"<strong>name</strong>"（这个属性有填写格式，光标集合节点的格式：<span style="color: rgb(255,0,0);">"<strong>fset-</strong>"+父节点id</span>，此处光标集合节点A的父节点为页面的根节点"main_focus"，也就是说"main_focus"为页面上最大的光标集合节点），</li><li>"<strong>x</strong>"（x轴上的坐标值）,</li><li>"<strong>y</strong>"（y轴上的坐标值）,</li></ul>
+        <p>除此之外，光标集合节点还可以有三个可选属性：</p>
+        <ul><li>"<strong>status</strong>"<span style="color: rgb(0,0,0);">（光标集合节点的状态，1为可用，0为不可用，不可用的光标集合节点在光标移动时将不可进入，默认为1），</span></li><li><span style="color: rgb(0,0,0);">"<strong>default</strong>"（用于设定第一次进光标集合节点的默认高亮子结点，格式为'x,y'，默认为空），</span></li><li><span style="color: rgb(0,0,0);"><span style="color: rgb(0,0,0);">"<strong>filter</strong>"（用于将当前光标集合节点设定为不可用节点，<span style="color: rgb(0,0,0);">1为不可用，0为可用，<span style="color: rgb(0,0,0);">默认为0。该属性</span></span><span style="color: rgb(153,51,0);">和'status'属性的区别</span>在于，'status'为0的<span style="color: rgb(0,0,0);">光标集合节点</span>属于光标系统，<span style="color: rgb(0,0,0);">'<span style="color: rgb(0,0,0);">filter</span></span><span style="color: rgb(0,0,0);">'为0的<span style="color: rgb(0,0,0);">光标集合节点</span>不属于光标系统）。</span></span></span></li></ul>
+        <p>class为"a"的div就是可以落焦的光标节点，这里同样也添加了光标节点<span style="color: rgb(255,0,0);">必写</span>的三个属性，</p>
+        <ul><li>"<strong>name</strong>"（这个属性有填写格式，光标节点的格式：<span style="color: rgb(255,0,0);">"<strong>fnode-</strong>"+父节点id</span>，此处光标节点的父节点id为"A"，所以得到"fnode-A"），</li><li>"<strong>x</strong>"（x轴上的坐标值）,</li><li>"<strong>y</strong>"（y轴上的坐标值）,</li></ul>
+        <p>光标节点的其他五个可选属性有：</p>
+        <ul><li>"<strong>id</strong>"（光标节点的唯一标识，默认为空）</li><li>"<strong>status</strong>"<span style="color: rgb(0,0,0);">（光标节点的状态，1为可用，0为不可用，不可用的光标节点在光标移动时将不可落焦，默认为1），</span></li><li>"<strong>url</strong>"（用于设定跳转的地址，默认为空），</li><li>"<strong>history</strong>"（用于设定跳转时是否记住跳转历史，默认为空），</li><li>"<strong>auth</strong>"（用于设定跳转播放时的鉴权控制，默认为空）。</li></ul>
+        <div class="content">除了系统设定的光标属性，开发人员也可以自定义光标属性，例如，设定index="8"</div>
+        <pre>
+                <code class="javascript">
+var main_focus = new FocusNode({id:'main_focus'});
+bjf.focus.build(bjf.$('.main'), main_focus);
+bjf.focus.eventDefault.on = function () {
+    this.data.ele.getAttribute('index');
+};
+                </code>
+            </pre>
+    </div>
+</div>
+<div class="doc">
+    <div class="name"><a id="eventDefault"></a>bjf.focus.eventDefault</div>
+    <div class="content">默认的光标事件响应，通过重写方法覆盖光标的响应事件</div>
+    <div class="content">默认的光标事件响应有on(光标点亮时的回调函数)、lost(光标移走时的回调函数)和 ok(光标按钮被点击时的回调函数)；允许用户自定义的光标集方法有enter(光标移进来时的回调函数)、leave(光标移出去时的回调函数)、top(光标移动到上边界时的回调函数)、bottom(光标移动到下边界时的回调函数)、left(光标移动到左边界时的回调函数)和 right(光标移动到右边界时的回调函数)等。</div>
+    <div class="content">需要注意的是，覆盖定义时可以和addEventListener对比着灵活使用,达到预期想要的效果。示例：</div>
+    <div class="demo">
+            <pre>
+                <code class="javascript">
+//【光标节点定义方法一】定义全局光标节点的on方法
+bjf.focus.eventDefault.on = function () {
+    bjf.debug('bjf.focus.eventDefault ok');
+};
+//【光标集定义方法一】定义全局光标集的enter方法
+bjf.focus.eventDefault.enter = function () {
+    bjf.debug('bjf.focus.eventDefault enter');
+};
+
+bjf.focus.addEventListener('光标集A(填id)', {
+    //【光标节点定义方法二】定义光标集A下的所有光标节点的on方法，这里'child_'前缀固定
+    'child_on' : function () {
+        bjf.debug('光标集A child_on');
+    },
+    //【光标集定义方法一】定义光标集A的enter方法
+    'enter' : function () {
+        bjf.debug('光标集A enter');
+    }
+});
+
+bjf.focus.addEventListener('光标节点B(填id)', {
+    //【光标节点定义方法三】定义光标节点B的on方法
+    'on' : function () {
+        bjf.debug('光标节点B on');
+    },
+});
+
+//注，光标节点方法调用优先顺序: 光标节点定义方法三 > 光标节点定义方法二 > 光标节点定义方法一 。光标集方法调用优先顺序: 光标集定义方法二 > 光标集定义方法一 。
+                </code>
+            </pre>
+    </div>
+    <div class="content">默认已经根据元素的位置和宽高给光标设置了位置和宽高，特别需要说明的是，为了兼容UT盒子，需要使用相对于body的position:relative或者position:absolute在html行内式中用style的方法标注width,height,left和top值</div>
+    <div class="content">如果需要进一步自定义光标宽高和位置，可以在eventDefault.on的回调方法中进行设置来覆盖</div>
+</div>
+<script src="../xdoc/highlight/highlight.pack.js"></script>
+<script>
+    hljs.initHighlightingOnLoad();
+</script>
+</body>
+</html>

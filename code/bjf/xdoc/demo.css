@@ -1,0 +1,48 @@
+body {
+    margin: 10px;
+    font-family: "Microsoft yahei";
+}
+.h1 {
+    font-size: 22px;
+    color: #697882;
+}
+.desc {
+    background-color: #f9f0f0;
+    border-left: 3px solid #dca7b0;
+    padding: 10px 16px;
+    margin: 16px 0;
+    line-height: 30px;
+    color: #333;
+}
+
+.notice {
+    background-color: #ffe9a8;
+    border-left: 3px solid #FFEB3B;
+    padding: 10px 16px;
+    margin: 16px 0;
+    line-height: 30px;
+    color: #333;
+}
+
+.title {
+    font-size: 18px;
+    color: #000;
+}
+li {
+    color: #485a6a;
+    line-height: 30px;
+}
+.doc {
+    padding-left: 20px;
+}
+.doc > .name {
+    color: #485a6a;
+    font-weight: bold;
+    line-height: 50px;
+    border-bottom: 1px solid #eee;
+    margin: 16px 0;
+}
+.doc > .content {
+    color: #333;
+    line-height: 30px;
+}

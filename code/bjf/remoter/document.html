@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>bjf base</title>
+    <link rel="stylesheet" href="../xdoc/demo.css">
+    <link rel="stylesheet" href="../xdoc/highlight/styles/monokai-sublime.css">
+</head>
+<body>
+    <div class="h1">bjf remoter模块</div>
+    <div class="desc">该模块将接管遥控器的按键输入，并提供一系列的虚拟事件来供页面和其他模块调用，使用方法可参考<a target="_blank" href="demo.html">示例页面</a>
+        <br />该模块监听<a href="#keymap">键值对应表</a>中的遥控器按键，并将页面原生的onkeydown事件转化为虚拟事件
+        <br />虚拟事件也拥有完备的<a href="#event">事件冒泡和默认事件机制</a>
+        <br />使用remoter模块后，页面将不能自主监听window.onload,否则将会导致该模块不可用
+    </div>
+    <div class="title">方法和对象列表：</div>
+    <div>
+       <ul>
+            <li><a href="#onload">bjf.onload</a></li>
+            <li><a href="#on">bjf.remoter.on</a></li>
+            <li><a href="#setDefaultHandler">bjf.remoter.setDefaultHandler</a></li>
+            <li><a href="#removeListener">bjf.remoter.removeListener</a></li>
+            <li><a href="#removeAllListeners">bjf.remoter.removeAllListeners</a></li>
+            <li><a href="#onKeyUp">bjf.remoter.onKeyUp</a></li>
+            <li><a href="#onKeyDown">bjf.remoter.onKeyDown</a></li>
+            <li><a href="#onKeyLeft">bjf.remoter.onKeyLeft</a></li>
+            <li><a href="#onKeyRight">bjf.remoter.onKeyRight</a></li>
+            <li><a href="#onKeyOk">bjf.remoter.onKeyOk</a></li>
+            <li><a href="#onKeyBack">bjf.remoter.onKeyBack</a></li>
+            <li><a href="#onKeyPrev">bjf.remoter.onKeyPrev</a></li>
+            <li><a href="#onKeyNext">bjf.remoter.onKeyNext</a></li>
+            <li><a href="#onKeyVolUp">bjf.remoter.onKeyVolUp</a></li>
+            <li><a href="#onKeyVolDown">bjf.remoter.onKeyVolDown</a></li>
+            <li><a href="#onKeyMute">bjf.remoter.onKeyMute</a></li>
+            <li><a href="#onKeyHome">bjf.remoter.onKeyHome</a></li>
+            <li><a href="#onKeyVirtual">bjf.remoter.onKeyVirtual</a></li>
+            <li><a href="#onKeyInput">bjf.remoter.onKeyInput</a></li>
+            <li><a href="#onKeyChannelUp">bjf.remoter.onKeyChannelUp</a></li>
+            <li><a href="#onKeyChannelDown">bjf.remoter.onKeyChannelDown</a></li>
+            <li><a href="#onKeyFf">bjf.remoter.onKeyFf</a></li>
+            <li><a href="#onKeyFr">bjf.remoter.onKeyFr</a></li>
+            <li><a href="#onKeyDelete">bjf.remoter.onKeyDelete</a></li>
+            <li><a href="#onKeyRefresh">bjf.remoter.onKeyRefresh</a></li>
+            <li><a href="#onKeyPause">bjf.remoter.onKeyPause</a></li>
+        </ul>
+    </div>
+    <div class="title">方法和对象说明：</div>
+    <div class="doc">
+        <div class="name"><a id="onload"></a>bjf.onload(callBackFunc)</div>
+        <div class="content">由于原先的window.onload已经被remoter占用，所以页面调用此方法，来实现页面加载完成后触发回调函数
+            <br />此方法可执行多次，添加多个回调函数，在页面真正onload时，依次触发执行。
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.onload(function () {
+    init();
+});
+
+//再次添加
+bjf.onload(function () {
+    //还能做点什么
+});
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="on"></a>bjf.remoter.on(eventObj)</div>
+        <div class="content">用来监听一组遥控器事件
+            <br />eventObj的key必须是有效的事件名，value必须是对应的回调函数
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.remoter.on({
+    'KeyOk' : function (e) {
+        console.log('KeyOk');
+    },
+    'KeyRight' : function (e) {
+        bjf.debug('按下了遥控器右键');
+    }
+});
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="setDefaultHandler"></a>bjf.remoter.setDefaultHandler(eventName, callBackFunc)</div>
+        <div class="content">添加某一事件的默认响应回调
+            <br />此方法添加的callBackFunc，有可能会被PreventDefault禁止掉，详见<a href="#event">事件冒泡和默认事件机制</a>
+            <br />此方法一般只能使用一次，重复使用会覆盖掉之前添加的callBackFunc
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.remoter.setDefaultHandler('KeyNext', function (e) {
+    getNextPage();   //下一页
+});
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="removeListener"></a>bjf.remoter.removeListener(eventName, callBackFunc)</div>
+        <div class="content">删除指定按键值上之前添加的某一事件监听函数
+            <br />由于一些早期中兴机顶盒，不支持以函数作为key的搜索，所以不建议使用此方法来删除监听函数
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+//删除掉之前添加的监听函数
+bjf.remoter.removeListener('KeyOk', function (e) {
+    xxdo();
+});
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="removeAllListeners"></a>bjf.remoter.removeAllListeners(eventName)</div>
+        <div class="content">删除指定按键值上所有的监听函数
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+//删除掉所有监听KeyOk的回调函数
+bjf.remoter.removeAllListeners('KeyOk');
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="onKeyUp"></a>bjf.remoter.onKeyUp(callBackFunc)</div>
+        <div class="content">添加监听KeyUp键的回调函数
+            <br />可多次添加callBackFunc，并且能通过阻止冒泡来停止后面的callBackFunc执行
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.remoter.onKeyUp(function (e) {
+    //用户按下的上方向键
+});
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="onKeyDown"></a>bjf.remoter.onKeyDown(callBackFunc)</div>
+        <div class="content">添加监听KeyDown键的回调函数
+            <br />可多次添加callBackFunc，并且能通过阻止冒泡来停止后面的callBackFunc执行
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.remoter.onKeyDown(function (e) {
+    //用户按下了下方向键
+});
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="onKeyLeft"></a>bjf.remoter.onKeyLeft(callBackFunc)</div>
+        <div class="content">添加监听KeyLeft键的回调函数
+            <br />可多次添加callBackFunc，并且能通过阻止冒泡来停止后面的callBackFunc执行
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.remoter.onKeyLeft(function (e) {
+    //用户按下了左方向键
+});
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="onKeyRight"></a>bjf.remoter.onKeyRight(callBackFunc)</div>
+        <div class="content">添加监听KeyRight键的回调函数
+            <br />可多次添加callBackFunc，并且能通过阻止冒泡来停止后面的callBackFunc执行
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.remoter.onKeyRight(function (e) {
+    //用户按下了右方向键
+});
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="onKeyOk"></a>bjf.remoter.onKeyOk(callBackFunc)</div>
+        <div class="content">添加监听KeyOk键的回调函数
+            <br />可多次添加callBackFunc，并且能通过阻止冒泡来停止后面的callBackFunc执行
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.remoter.onKeyOk(function (e) {
+    //用户按下了Ok键
+});
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="onKeyBack"></a>bjf.remoter.onKeyBack(callBackFunc)</div>
+        <div class="content">添加监听KeyBack键的回调函数
+            <br />可多次添加callBackFunc，并且能通过阻止冒泡来停止后面的callBackFunc执行
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.remoter.onKeyBack(function (e) {
+    //用户按下了返回键
+});
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="onKeyPrev"></a>bjf.remoter.onKeyPrev(callBackFunc)</div>
+        <div class="content">添加监听KeyPrev键的回调函数
+            <br />可多次添加callBackFunc，并且能通过阻止冒泡来停止后面的callBackFunc执行
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.remoter.onKeyPrev(function (e) {
+    //用户按下了上一页
+});
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="onKeyNext"></a>bjf.remoter.onKeyNext(callBackFunc)</div>
+        <div class="content">添加监听KeyNext键的回调函数
+            <br />可多次添加callBackFunc，并且能通过阻止冒泡来停止后面的callBackFunc执行
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.remoter.onKeyNext(function (e) {
+    //用户按下了下一页
+});
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="onKeyVolUp"></a>bjf.remoter.onKeyVolUp(callBackFunc)</div>
+        <div class="content">添加监听KeyVolUp键的回调函数
+            <br />可多次添加callBackFunc，并且能通过阻止冒泡来停止后面的callBackFunc执行
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.remoter.onKeyVolUp(function (e) {
+    //用户按下了音量+
+});
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="onKeyVolDown"></a>bjf.remoter.onKeyVolDown(callBackFunc)</div>
+        <div class="content">添加监听KeyVolDown键的回调函数
+            <br />可多次添加callBackFunc，并且能通过阻止冒泡来停止后面的callBackFunc执行
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.remoter.onKeyVolDown(function (e) {
+    //用户按下了音量-
+});
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="onKeyMute"></a>bjf.remoter.onKeyMute(callBackFunc)</div>
+        <div class="content">添加监听KeyMute键的回调函数
+            <br />可多次添加callBackFunc，并且能通过阻止冒泡来停止后面的callBackFunc执行
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.remoter.onKeyMute(function (e) {
+    //用户按下了静音键
+});
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="onKeyHome"></a>bjf.remoter.onKeyHome(callBackFunc)</div>
+        <div class="content">添加监听KeyHome键的回调函数
+            <br />可多次添加callBackFunc，并且能通过阻止冒泡来停止后面的callBackFunc执行
+            <br />由于大多数盒子对于home键是强制响应的，所以此处对于停止冒泡和阻止默认响应之类的设置可能会失效
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.remoter.onKeyHome(function (e) {
+    //用户按下了Home键
+});
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="onKeyVirtual"></a>bjf.remoter.onKeyVirtual(callBackFunc)</div>
+        <div class="content">添加监听KeyVirtual键的回调函数
+            <br />可多次添加callBackFunc，并且能通过阻止冒泡来停止后面的callBackFunc执行
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.remoter.onKeyVirtual(function (e) {
+    //虚拟按键被触发
+});
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="onKeyInput"></a>bjf.remoter.onKeyInput(callBackFunc)</div>
+        <div class="content">添加监听KeyInput键的回调函数
+            <br />可多次添加callBackFunc，并且能通过阻止冒泡来停止后面的callBackFunc执行
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.remoter.onKeyInput(function (e) {
+    //一般的数字按键会被认为是Input按键，实际上除了数字键，在keyMap之外的所有按键，都认为是Input按键，通过e.keyCode来获取他们的键值
+});
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="onKeyChannelUp"></a>bjf.remoter.onKeyChannelUp(callBackFunc)</div>
+        <div class="content">添加监听KeyChannelUp键的回调函数
+            <br />可多次添加callBackFunc，并且能通过阻止冒泡来停止后面的callBackFunc执行
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.remoter.onKeyChannelUp(function (e) {
+    //用户按下了频道+
+});
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="onKeyChannelDown"></a>bjf.remoter.onKeyChannelDown(callBackFunc)</div>
+        <div class="content">添加监听KeyChannelDown键的回调函数
+            <br />可多次添加callBackFunc，并且能通过阻止冒泡来停止后面的callBackFunc执行
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.remoter.onKeyChannelDown(function (e) {
+    //用户按下了频道-
+});
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="onKeyFf"></a>bjf.remoter.onKeyFf(callBackFunc)</div>
+        <div class="content">添加监听KeyFf键的回调函数
+            <br />可多次添加callBackFunc，并且能通过阻止冒泡来停止后面的callBackFunc执行
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.remoter.onKeyFf(function (e) {
+    //用户按下了快进键
+});
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="onKeyFr"></a>bjf.remoter.onKeyFr(callBackFunc)</div>
+        <div class="content">添加监听KeyFr键的回调函数
+            <br />可多次添加callBackFunc，并且能通过阻止冒泡来停止后面的callBackFunc执行
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.remoter.onKeyFr(function (e) {
+    //用户按下了快退键
+});
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="onKeyDelete"></a>bjf.remoter.onKeyDelete(callBackFunc)</div>
+        <div class="content">添加监听KeyDelete键的回调函数
+            <br />可多次添加callBackFunc，并且能通过阻止冒泡来停止后面的callBackFunc执行
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.remoter.onKeyDelete(function (e) {
+    //用户按下了删除键
+});
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="onKeyRefresh"></a>bjf.remoter.onKeyRefresh(callBackFunc)</div>
+        <div class="content">添加监听KeyRefresh键的回调函数
+            <br />可多次添加callBackFunc，并且能通过阻止冒泡来停止后面的callBackFunc执行
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.remoter.onKeyRefresh(function (e) {
+    //用户按下了刷新键
+});
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="onKeyPause"></a>bjf.remoter.onKeyPause(callBackFunc)</div>
+        <div class="content">添加监听KeyPause键的回调函数
+            <br />可多次添加callBackFunc，并且能通过阻止冒泡来停止后面的callBackFunc执行
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.remoter.onKeyPause(function (e) {
+    //用户按下了暂停键
+});
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+        <div class="name"><a id="event"></a>事件冒泡和默认事件机制</div>
+        <div class="content">事件冒泡机制，可以让监听函数通过stopPropagation来阻止后续监听函数继续执行
+            <br />而默认事件监听函数，不会受到stopPropagation的影响，永远是最后一个执行的。但是普通监听函数可以用preventDefault的方式来阻止它执行
+            <br />由于受部分盒子的兼容性限制(Event对象的stopPropagation没有，或无效)，这里额外增加了Event对象的safeStopPropagation和safePreventDefault。这两个方法将有更好的兼容性，推荐优先使用
+            <br />看具体例子
+        </div>
+        <div class="demo">
+            <pre>
+                <code class="javascript">
+bjf.remoter.onKeyOk(function (e) {
+    //我是第一个监听函数
+    e.stopPropagation();
+});
+bjf.remoter.onKeyOk(function (e) {
+    //我是第二个监听函数
+    //我在等第一个执行完，但是它调用了stopPropagation，阻止了事件冒泡，我无法执行了
+});
+
+bjf.remoter.onKeyBack(function (e) {
+    //我监听Back按键
+    e.preventDefault();
+});
+
+bjf.remoter.setDefaultHandler('KeyBack', function (e) {
+    //我是返回键的默认监听函数，谁都不处理，或者所有KeyBack的监听函数都处理完了，就轮到我处理了
+    //但是上一个监听函数执行了preventDefault，我无法执行了
+    page_back();
+});
+
+bjf.remoter.onKeyLeft(function (e) {
+   //safeStopPropagation和stopPropagation相比，兼容性更好
+   //同样safePreventDefault比preventDefault兼容性更好
+    e.safeStopPropagation(); //阻止后续监听函数执行
+});
+
+                </code>
+            </pre>
+        </div>
+    </div>
+    <div class="doc">
+      <div class="content">键值对应表:</div>
+       <div class="demo"><a id="keymap"></a>
+            <pre>
+                <code class="php">
+key_map = {
+    KEY_BACK         : 8,
+    KEY_OKey         : 13,
+    KEY_BACK2        : 18,    //OTT KEY BACK,  
+    KEY_PREV         : 33,
+    KEY_NEXT         : 34,
+    KEY_LEFT         : 37,
+    KEY_UP           : 38,
+    KEY_RIGHT        : 39,
+    KEY_DOWN         : 40,
+    KEY_CHANNEL_UP   : 257,
+    KEY_CHANNEL_DOWN : 258,
+    KEY_VOL_UP       : 259,
+    KEY_VOL_DOWN     : 260,
+    KEY_MUTE         : 261,
+    KEY_PAUSE        : 263,
+    KEY_FF           : 264,    //Fast Forward,  
+    KEY_FR           : 265,    //Fast Rewind,  
+    KEY_DELETE       : 271,
+    KEY_HOME         : 272,
+    KEY_REFRESH      : 280,
+    KEY_HOME2        : 613,    //OTT home
+    KEY_VIRTUAL      : 768,    //IPTV VIRTUAL KEY
+    KEY_INPUT        : [所有非以上键值的其他按键]
+};
+                </code>
+            </pre>
+        </div>
+    </div>
+    <script src="../xdoc/highlight/highlight.pack.js"></script>
+    <script>
+        hljs.initHighlightingOnLoad();
+    </script>
+</body>
+</html>

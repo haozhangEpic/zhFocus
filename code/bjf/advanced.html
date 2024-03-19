@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BJF框架常见问题分析 以及进阶教程</title>
+    <link rel="stylesheet" href="xdoc/highlight/styles/monokai-sublime.css">
+    <style>
+        p {
+            font-size: 18px;
+            color: #333;
+            line-height: 20px;
+            padding-left: 50px;
+            margin: 6px 0px;
+        }
+        b {
+            color: #000;
+        }
+        h2,h3 {
+            margin: 16px 0 20px 10px;
+        }
+        pre {
+            margin-left: 50px;
+            margin-top: 0px;
+            font-size: 16px;
+            line-height: 20px;
+        }
+        .hljs-comment, .hljs-deletion, .hljs-meta {
+            color: lime;
+        }
+    </style>
+</head>
+<body>
+    <h2>BJF框架常见问题分析 以及进阶教程</h2>
+    <div>
+        <h3>常见问题1：页面没有光标</h3>
+        <p><b>定位步骤1</b>：init的第一个节点是否有值</p>
+        <p><b>定位步骤2</b>：init之后能否查询到亮起节点信息</p>
+        <p><b>定位步骤3</b>：有没有触发节点的on事件</p>
+        <p>示例代码：</p>
+        <pre>
+            <code class="javascript">bjf.focus.eventDefault.on = function () {
+    //bjf.debug('focus on');
+};
+var _node = main_focus.getFirstChild();
+//bjf.debug(_node);
+bjf.focus.init(_node);
+//bjf.debug(bjf.focus.node);
+            </code>
+        </pre>
+    </div>
+    <br />
+    <div>
+        <h3>常见问题2：光标移动到某个位置后，动不了</h3>
+        <p><b>定位步骤1</b>：是否收到遥控器按键事件</p>
+        <p><b>定位步骤2</b>：光标有没有被锁定</p>
+        <p><b>定位步骤3</b>：有没有触发节点的on事件</p>
+        <p>示例代码：</p>
+        <pre>
+            <code class="javascript">bjf.focus.eventDefault.on = function () {
+    //bjf.debug('focus on');
+};
+bjf.remoter.onKeyDown(function (e) {
+    //bjf.debug('用户按下了下方向键');
+});
+//bjf.debug(bjf.focus.locked);
+
+            </code>
+        </pre>
+    </div>
+    
+    <br />
+    <div>
+        <h3>常见问题3：光标框无法显示 或位置错乱</h3>
+        <p><b>定位步骤1</b>：在on事件里，光标框的定位是否准确</p>
+        <p>示例代码：</p>
+        <pre>
+            <code class="javascript">bjf.focus.eventDefault.on = function(){
+    if(IS_UT){
+        var env = window.getComputedStyle(this.data.ele, null);
+        //bjf.debug(parseInt(env.width),parseInt(env.height),parseInt(env.left),parseInt(env.top));
+        bjf.focusUI.setSize(parseInt(env.width),parseInt(env.height));
+        bjf.focusUI.setPost(parseInt(env.left),parseInt(env.top));
+    }else{
+        var env = this.data.ele.getBoundingClientRect();
+        //bjf.debug(parseInt(env.width),parseInt(env.height),parseInt(env.left),parseInt(env.top));
+        bjf.focusUI.setSize(parseInt(env.width), parseInt(env.height));
+        bjf.focusUI.setPost(parseInt(env.left), parseInt(env.top));
+    }
+};
+            </code>
+        </pre>
+        
+        <p><b>定位步骤2</b>：盒子是否支持Transform</p>
+        <p>示例代码：</p>
+        <pre>
+            <code class="javascript">//bjf.debug(bjf.focusUI.ta_support);</code>
+        </pre>
+        <p><b>定位步骤3</b>：动画还没执行完就触发了on监听</p>
+    </div>
+    
+    <br />
+    <div>
+        <h3>常见问题4：光标第一次亮起时，从左上角飞入</h3>
+        <p><b>定位步骤1</b>：在on事件里，光标框的定位是否准确</p>
+        <p>案例参考：<a target="_blank" href="http://10.61.13.55/vasroot/viscore/portal/biz_hq_10035282_hd/category/category_hq_10035300">链接</a></p>
+        <p>问题原因：在初始化光标后，第一次亮起时使用了bjf.focusUI.on()方法</p>
+        <p>示例代码：</p>
+        <pre>
+            <code class="javascript">//注册默认on事件的方法
+bjf.focus.eventDefault.on = function () {
+    var _ele = bjf.$('#'+this.id);
+    if(!bjf.focusUI.display)   bjf.focusUI.on();
+    bjf.focusUI.setSize(parseInt(_ele.style.width), parseInt(_ele.style.height));
+    bjf.focusUI.setPost(parseInt(_ele.style.left), parseInt(_ele.style.top));
+};
+            </code>
+        </pre>
+    </div>
+    
+    <br />
+    <div>
+        <h3>进阶学习：focusUI默认光标框的初始状态</h3>
+        <p>bjf.focusUI.init初始化光标框之后，在bjf.focus.init之前的状态：</p>
+        <pre>
+            <code class="javascript">//bjf.focusUI.box即为真正展示的光标框div
+bjf.focusUI.display = 0;
+bjf.focusUI.box.style.zIndex = '99998';
+bjf.focusUI.duration = 150;//ms
+bjf.focusUI.box.div.style.webkitTransform = 'translate3d(-' + (bjf.focusUI.border*8) + 'px,0px,0px)';
+//bjf.focusUI.box.style.left = '-' + (this.border*8) + 'px';</code>
+        </pre>
+        <p><b>经验1</b>：bjf.focusUI.box即为真正的光标框DIV，拿到它就可对光标框的样式做任意修改。</p>
+        <p><b>经验2</b>：bjf.focusUI.box的zIndex非常高，但是可在初始化之后更改。</p>
+        <p><b>经验3</b>：bjf.focusUI.box默认是隐藏在左上角的屏幕之外的地方。</p>
+    </div>
+    
+    <br />
+    <div>
+        <h3>进阶学习：focusUI模块的光标框位置/大小设置技巧</h3>
+        <p>设置位置的方法：</p>
+        <pre>
+            <code class="javascript">//设置相对于屏幕左上角的绝对位置
+bjf.focusUI.setPost(left, top);//会主动调用bjf.focusUI.on()</code>
+           <code class="javascript">//设置相对于集合内左顶点的相对位置
+bjf.focusUI.setOffset(offsetLeft, offsetTop);
+bjf.focusUI.setGap(gapX, gapY);//集合内，一组元素间的间隙
+bjf.focusUI.setPostBy(x, y);//会主动调用bjf.focusUI.on()</code>
+        </pre>
+        <p><a target="_blank" href="http://10.61.13.147/vistools/bjf/focusUI/demo.html">相对定位练习</a></p>
+        <p><b>经验1</b>：在大小相同的同一组光标集合内，可在进入集合时就设置好大小，如：</p>
+        <pre>
+            <code class="javascript">bjf.focus.addEventListener('right', 'enter', function () {
+    bjf.focusUI.setGap(40, 40);
+    bjf.focusUI.setOffset(340, 90);
+    bjf.focusUI.setSize(252, 102);
+});
+bjf.focus.addEventListener('right', 'child_ok', function () {
+    //此时只需设置位置，无需设置大小
+    bjf.focusUI.setPostBy(this.x, this.y);
+});
+           </code>
+        </pre>
+    </div>
+    
+    <br />
+    <div>
+        <h3>常见问题5：光标移动时，大小变化会闪烁</h3>
+        <p><b>问题原因</b>：盒子动画性能太差，导致大小变化闪烁</p>
+        <p><b>案例参考</b>：<a target="_blank" href="http://10.61.13.55/vasroot/viscore/portal/biz_hq_10035282_hd/category/category_hq_10035300">链接</a></p>
+        <p><b>解决方案</b>：关闭动画</p>
+        <p>示例代码：</p>
+        <pre>
+            <code class="javascript">bjf.focusUI.init();
+
+//更改duration要放在init之后
+bjf.focusUI.duration = 0;</code>
+        </pre>
+        <p><span style="color:blue">讨论</span>：光标在进行大小变化的同时移动，是否需要动画[需要先setSize后setPost]。</p>
+    </div>
+    
+    <br />
+    <div>
+        <h3>常见问题6：默认光标如何与自定义光标无缝切换</h3>
+        
+        <p><b>注意事项</b>：自定义光标框的ID与默认光标框的ID冲突。</p>
+        <p><b>注意事项</b>：不同样式光标框，切换时要做好收尾工作。</p>
+        <p>示例代码：</p>
+        <pre>
+            <code class="javascript">bjf.focus.addEventListener('default_area', 'leave', function () {
+    bjf.focusUI.lost();
+});</code>
+        </pre>
+    </div>
+    <br />
+    <div>
+        <h3>进阶学习：落焦动作与方向选择</h3>
+        <p>光标事件监听回调的参数：</p>
+        <pre>
+            <code class="javascript">bjf.focus.addEventListener('default_area', 'child_on', function (dir_) {
+   //上下结构的光标集合 
+   if (dir_ == bjf.focus.DIR_DOWN) {
+        //做些什么
+    }
+    else if (dir_ == bjf.focus.DIR_UP) {
+        //做些什么
+    }
+    bjf.focusUI.setSize(100, 200);
+});</code>
+        </pre>
+        <p>只有on和lost会传递方向参数</p>
+    </div>
+    
+    <br />
+    <div>
+        <h3>进阶学习：人工落焦，以及初始化方法</h3>
+        <p>在边界事件内的人工落焦：</p>
+        <pre>
+            <code class="javascript">bjf.focus.addEventListener('default_area', 'left', function () {
+   var _node = main_focus.getChild(0,1);
+   bjf.focus.change(_node);
+   return false;
+});</code>
+        </pre>
+        <p>初始化的方法：</p>
+        <pre>
+            <code class="javascript">//默认的初始化
+bjf.focus.init(main_focus.getChild(0,1));
+
+//通过历史记录，跟节点必须是离开时光标节点所在的祖先节点，如果光标系没有被替换，以及重建过，需要还原。
+bjf.focus.initByHistory(main_focus, str_);
+
+//自己手工初始化指定的节点
+bjf.focus.change(node_);</code>
+        </pre>
+    </div>
+    
+    <br />
+    <div>
+        <h3>进阶学习：如何设置默认光标</h3>
+        <p>default_node：</p>
+        <pre>
+            <code class="javascript">&lt;div name="fset-main_focus" x="0" y="0" id="area_a" default="0,1">&lt;/div>
+&lt;script>
+var area_a = main_focus.getChild(0,0);
+//default_node属性在第一次落焦后就会被删掉
+main_focus.default_node = [0,2];
+&lt;/script></code>
+        </pre>
+        <p>cache与伪造cache：</p>
+        <pre>
+            <code class="javascript">&lt;div name="fset-main_focus" x="0" y="0" id="area_a" cache="1">&lt;/div>
+&lt;script>
+var area_a = main_focus.getChild(0,0);
+//cache只有在与离开时相反的方向进入集合时，才会被选用
+main_focus.saved_id  = [0,2];
+从右侧进入集合时，将会落焦到集合内的0,2节点上
+main_focus.saved_dir = 2;//1上-1下，2左-2右
+&lt;/script></code>
+        </pre>
+    </div>
+    <br />
+    <div>
+        <h3>进阶学习：getChild、getFirstChild以及getLastChild的区别</h3>
+        <p>getChild与getFirstChild：</p>
+        <pre>
+            <code class="javascript">//不会触发enter事件，不会进入到子结点
+var area_a = main_focus.getChild(0,0);
+
+//会触发enter事件，直到找到可落焦的子孙按钮节点
+var area_a = main_focus.getFirstChild();
+
+//会触发enter事件，按照先往上再往左的顺序，找到最后一个可落焦的子孙按钮节点
+var area_a = main_focus.getLastChild();</code>
+        </pre>
+        <p>enter事件与getFirstChild：</p>
+        <pre>
+            <code class="javascript">bjf.focus.addEventListener('default_area', 'enter', function () {
+   var _node = this.getFirstChild();
+   bjf.focus.change(_node);
+   return false;
+});</code>
+        </pre>
+    </div>
+    <br />
+    <div>
+        <h3>进阶学习：手工触发事件</h3>
+        <p>光标集合事件(enter/leave/left/top/right/bottom)，与光标按钮事件(ok/lost/on)由框架在光标寻路与落焦过程中自动触发。</p>
+        <p>但是我们可以选择人工触发事件。</p>
+        <pre>
+            <code class="javascript">var area_a = main_focus.getChild(0,0);
+
+area_a.dispatchEvent('enter');
+area_a.dispatchEvent('left');
+
+area_a.getFirstChild().dispatchEvent('on', bjf.focus.DIR_UP);</code>
+        </pre>
+    </div>
+    <script src="xdoc/highlight/highlight.pack.js"></script>
+    <script>
+        hljs.initHighlightingOnLoad();
+    </script>
+</body>
+</html>

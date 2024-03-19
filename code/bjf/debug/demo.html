@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>bjf debug</title>
+    <link rel="stylesheet" href="../xdoc/highlight/styles/monokai-sublime.css">
+    <style>
+        body {
+            padding-top: 400px;
+        }
+    </style>
+</head>
+<body>
+    <div>页面代码：</div>
+    <pre>
+        <code class="javascript">
+bjf.openDebug();
+bjf.debug('a');
+bjf.debug([{a:1,b:2}, 1,2,3]);
+bjf.debug({a:1,b:2, c:[1,2,3, {a:1,b:2}]});
+bjf.debug(document.body);
+bjf.debug(Function);
+try {
+    throw new Error('哈哈哈哈');
+}
+catch (e) {
+    bjf.debug(e);
+}
+bjf.debug(Function, Object, Array);
+        </code>
+    </pre>
+    <script src="../base/bjf.js"></script>
+    <script src="debug.js"></script>
+    <script src="../xdoc/highlight/highlight.pack.js"></script>
+    <script>
+        hljs.initHighlightingOnLoad();
+        if ('pc' == bjf.env.type) {
+            bjf.openDebug();
+        }
+        bjf.openDebug();
+        bjf.debug('a');
+        bjf.debug([{a:1,b:2}, 1,2,3]);
+        bjf.debug({a:1,b:2, c:[1,2,3, {a:1,b:2}]});
+        bjf.debug(document.body);
+        bjf.debug(Function);
+        try {
+            throw new Error('哈哈哈哈');
+        }
+        catch (e) {
+            bjf.debug(e);
+        }
+        bjf.debug(Function, Object, Array);
+        //bjf.cdebug(document.getElementsByTagName('div'));
+    </script>
+</body>
+</html>
